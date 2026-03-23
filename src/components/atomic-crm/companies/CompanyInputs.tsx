@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import ImageEditorField from "../misc/ImageEditorField";
 import { isLinkedinUrl } from "../misc/isLinkedInUrl";
 import { useConfigurationContext } from "../root/ConfigurationContext";
-import type { Company, Sale } from "../types";
+import type { Actor, Company } from "../types";
 import { getTranslatedCompanySizeLabel } from "./getTranslatedCompanySizeLabel";
 import { sizes } from "./sizes";
 
@@ -161,17 +161,17 @@ const CompanyAdditionalInformationInputs = () => {
         </SimpleFormIterator>
       </ArrayInput>
       <ReferenceInput
-        source="sales_id"
-        reference="sales"
+        source="actor_id"
+        reference="actors"
         filter={{
           "disabled@neq": true,
         }}
       >
-        <SelectInput helperText={false} optionText={saleOptionRenderer} />
+        <SelectInput helperText={false} optionText={actorOptionRenderer} />
       </ReferenceInput>
     </div>
   );
 };
 
-const saleOptionRenderer = (choice: Sale) =>
+const actorOptionRenderer = (choice: Actor) =>
   `${choice.first_name} ${choice.last_name}`;

@@ -13,8 +13,8 @@ import { RotateCcw } from "lucide-react";
 
 import { RelativeDate } from "../misc/RelativeDate";
 import { Status } from "../misc/Status";
-import { useGetSalesName } from "../sales/useGetSalesName";
-import type { ContactNote } from "../types";
+import { useGetActorName } from "../actors/useGetActorName";
+import type { Note } from "../types";
 import { InfinitePagination } from "../misc/InfinitePagination";
 import { useAddInfinitePagination } from "./useAddInfinitePagination";
 
@@ -91,14 +91,14 @@ export const NoteMobile = ({
   contactId,
   showStatus,
 }: {
-  note: ContactNote;
+  note: Note;
   contactId: Identifier;
   showStatus?: boolean;
 }) => {
   const translate = useTranslate();
   const { identity } = useGetIdentity();
-  const isCurrentUser = note.sales_id === identity?.id;
-  const salesName = useGetSalesName(note.sales_id, {
+  const isCurrentUser = note.actor_id === identity?.id;
+  const actorName = useGetActorName(note.actor_id, {
     enabled: !isCurrentUser,
   });
 
@@ -109,14 +109,14 @@ export const NoteMobile = ({
     >
       <div className="flex items-center space-x-2 w-full">
         <div className="inline-flex h-full items-center text-sm text-muted-foreground">
-          {isCurrentUser ? translate("resources.notes.me") : salesName}{" "}
+          {isCurrentUser ? translate("resources.notes.me") : actorName}{" "}
           {showStatus && note.status && (
             <Status className="ml-2" status={note.status} />
           )}
         </div>
         <div className="flex-1" />
         <span className="text-sm text-muted-foreground">
-          <RelativeDate date={note.date} />
+          <RelativeDate date={note.created_at} />
         </span>
       </div>
       {note.text && (

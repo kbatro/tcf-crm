@@ -7,75 +7,6 @@ import { AuthMiddleware, UserMiddleware } from "../_shared/authentication.ts";
 
 type Contact = Selectable<ContactsTable>;
 
-// Helper functions to merge arrays
-function mergeArraysUnique<T>(arr1: T[], arr2: T[]): T[] {
-  return [...new Set([...arr1, ...arr2])];
-}
-
-function mergeObjectArraysUnique<T>(
-  arr1: T[],
-  arr2: T[],
-  getKey: (item: T) => string,
-): T[] {
-  const map = new Map<string, T>();
-
-  arr1.forEach((item) => {
-    const key = getKey(item);
-    if (key) map.set(key, item);
-  });
-
-  arr2.forEach((item) => {
-    const key = getKey(item);
-    if (key && !map.has(key)) {
-      map.set(key, item);
-    }
-  });
-
-  return Array.from(map.values());
-}
-
-function mergeContactData(winner: Contact, loser: Contact) {
-  // Merge emails
-  const mergedEmails = mergeObjectArraysUnique(
-    winner.email_jsonb || [],
-    loser.email_jsonb || [],
-    (email: any) => email.email,
-  );
-
-  // Merge phones
-  const mergedPhones = mergeObjectArraysUnique(
-    winner.phone_jsonb || [],
-    loser.phone_jsonb || [],
-    (phone: any) => phone.number,
-  );
-
-  const selectedAvatar =
-    winner.avatar && winner.avatar.src ? winner.avatar : loser.avatar;
-
-  return {
-    avatar: selectedAvatar ? (JSON.stringify(selectedAvatar) as any) : null,
-    gender: winner.gender ?? loser.gender,
-    first_name: winner.first_name ?? loser.first_name,
-    last_name: winner.last_name ?? loser.last_name,
-    title: winner.title ?? loser.title,
-    company_id: winner.company_id ?? loser.company_id,
-    email_jsonb: JSON.stringify(mergedEmails) as any,
-    phone_jsonb: JSON.stringify(mergedPhones) as any,
-    linkedin_url: winner.linkedin_url || loser.linkedin_url,
-    background: winner.background ?? loser.background,
-    has_newsletter: winner.has_newsletter ?? loser.has_newsletter,
-    first_seen: winner.first_seen ?? loser.first_seen,
-    last_seen:
-      winner.last_seen && loser.last_seen
-        ? winner.last_seen > loser.last_seen
-          ? winner.last_seen
-          : loser.last_seen
-        : (winner.last_seen ?? loser.last_seen),
-    sales_id: winner.sales_id ?? loser.sales_id,
-    tags: mergeArraysUnique(winner.tags || [], loser.tags || []),
-  };
-}
-
 async function mergeContacts(
   loserId: number,
   winnerId: number,
@@ -112,42 +43,137 @@ async function mergeContacts(
         .where("contact_id", "=", loserId)
         .execute();
 
-      // 3. Reassign notes from loser to winner
+      // 3. Reassign notes (target_type='contact') from loser to winner
       await trx
-        .updateTable("contact_notes")
-        .set({ contact_id: winnerId })
+        .updateTable("notes")
+        .set({ target_id: winnerId })
+        .where("target_type", "=", "contact")
+        .where("target_id", "=", loserId)
+        .execute();
+
+      // 4. Update intention_contacts - replace loserId with winnerId, skip duplicates
+      await trx.executeQuery(
+        CompiledQuery.raw(
+          `INSERT INTO intention_contacts (intention_id, contact_id)
+           SELECT intention_id, ${winnerId}
+           FROM intention_contacts
+           WHERE contact_id = ${loserId}
+             AND NOT EXISTS (
+               SELECT 1 FROM intention_contacts
+               WHERE contact_id = ${winnerId}
+                 AND intention_id = intention_contacts.intention_id
+             )`,
+        ),
+      );
+      await trx
+        .deleteFrom("intention_contacts")
         .where("contact_id", "=", loserId)
         .execute();
 
-      // 4. Update deals - replace loserId with winnerId in contact_ids array
-      const deals = await trx
-        .selectFrom("deals")
-        .selectAll()
-        .where(sql`contact_ids @> ARRAY[${loserId}]::bigint[]`)
+      // 5. Merge channels: move loser's channels to winner, skip duplicates
+      await trx.executeQuery(
+        CompiledQuery.raw(
+          `INSERT INTO channels (contact_id, type, value, label)
+           SELECT ${winnerId}, type, value, label
+           FROM channels
+           WHERE contact_id = ${loserId}
+             AND NOT EXISTS (
+               SELECT 1 FROM channels
+               WHERE contact_id = ${winnerId}
+                 AND type = channels.type
+                 AND value = channels.value
+             )`,
+        ),
+      );
+      await trx
+        .deleteFrom("channels")
+        .where("contact_id", "=", loserId)
         .execute();
 
-      for (const deal of deals) {
-        const newContactIds = [
-          ...new Set(
-            deal.contact_ids.filter((id) => id !== loserId).concat(winnerId),
-          ),
-        ];
-        await trx
-          .updateTable("deals")
-          .set({ contact_ids: newContactIds })
-          .where("id", "=", deal.id)
-          .execute();
-      }
+      // 6. Merge properties: move loser's properties to winner, skip duplicates
+      await trx.executeQuery(
+        CompiledQuery.raw(
+          `INSERT INTO properties (contact_id, key, value, type)
+           SELECT ${winnerId}, key, value, type
+           FROM properties
+           WHERE contact_id = ${loserId}
+             AND NOT EXISTS (
+               SELECT 1 FROM properties
+               WHERE contact_id = ${winnerId}
+                 AND key = properties.key
+             )`,
+        ),
+      );
+      await trx
+        .deleteFrom("properties")
+        .where("contact_id", "=", loserId)
+        .execute();
 
-      // 5. Merge and update winner contact
-      const mergedData = mergeContactData(winner as Contact, loser as Contact);
+      // 7. Merge contact_tags: move loser's tags to winner, skip duplicates
+      await trx.executeQuery(
+        CompiledQuery.raw(
+          `INSERT INTO contact_tags (contact_id, tag_id)
+           SELECT ${winnerId}, tag_id
+           FROM contact_tags
+           WHERE contact_id = ${loserId}
+             AND NOT EXISTS (
+               SELECT 1 FROM contact_tags
+               WHERE contact_id = ${winnerId}
+                 AND tag_id = contact_tags.tag_id
+             )`,
+        ),
+      );
+      await trx
+        .deleteFrom("contact_tags")
+        .where("contact_id", "=", loserId)
+        .execute();
+
+      // 8. Merge group_members: move loser's memberships to winner, skip duplicates
+      await trx.executeQuery(
+        CompiledQuery.raw(
+          `INSERT INTO group_members (group_id, contact_id, role, joined_at, left_at)
+           SELECT group_id, ${winnerId}, role, joined_at, left_at
+           FROM group_members
+           WHERE contact_id = ${loserId}
+             AND NOT EXISTS (
+               SELECT 1 FROM group_members
+               WHERE contact_id = ${winnerId}
+                 AND group_id = group_members.group_id
+             )`,
+        ),
+      );
+      await trx
+        .deleteFrom("group_members")
+        .where("contact_id", "=", loserId)
+        .execute();
+
+      // 9. Update winner contact with merged basic fields
+      const selectedAvatar =
+        winner.avatar && (winner.avatar as any).src
+          ? winner.avatar
+          : loser.avatar;
+
       await trx
         .updateTable("contacts")
-        .set(mergedData)
+        .set({
+          avatar: selectedAvatar
+            ? (JSON.stringify(selectedAvatar) as any)
+            : null,
+          first_name: winner.first_name ?? loser.first_name,
+          last_name: winner.last_name ?? loser.last_name,
+          first_seen: winner.first_seen ?? loser.first_seen,
+          last_seen:
+            winner.last_seen && loser.last_seen
+              ? winner.last_seen > loser.last_seen
+                ? winner.last_seen
+                : loser.last_seen
+              : (winner.last_seen ?? loser.last_seen),
+          actor_id: winner.actor_id ?? loser.actor_id,
+        })
         .where("id", "=", winnerId)
         .execute();
 
-      // 6. Delete loser contact
+      // 10. Delete loser contact
       await trx.deleteFrom("contacts").where("id", "=", loserId).execute();
 
       return { success: true, winnerId };

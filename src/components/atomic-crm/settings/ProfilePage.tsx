@@ -33,12 +33,12 @@ import {
 
 import ImageEditorField from "../misc/ImageEditorField";
 import type { CrmDataProvider } from "../providers/types";
-import type { Sale, SalesFormData } from "../types";
+import type { Actor, ActorFormData } from "../types";
 
 export const ProfilePage = () => {
   const [isEditMode, setEditMode] = useState(false);
   const { identity, refetch: refetchIdentity } = useGetIdentity();
-  const { data, refetch: refetchUser } = useGetOne("sales", {
+  const { data, refetch: refetchUser } = useGetOne("actors", {
     id: identity?.id,
   });
   const translate = useTranslate();
@@ -47,7 +47,7 @@ export const ProfilePage = () => {
 
   const { mutate } = useMutation({
     mutationKey: ["signup"],
-    mutationFn: async (data: SalesFormData) => {
+    mutationFn: async (data: ActorFormData) => {
       if (!identity) {
         throw new Error(
           translate("crm.profile.record_not_found", {
@@ -55,7 +55,7 @@ export const ProfilePage = () => {
           }),
         );
       }
-      return dataProvider.salesUpdate(identity.id, data);
+      return dataProvider.actorsUpdate(identity.id, data);
     },
     onSuccess: () => {
       refetchIdentity();
@@ -101,7 +101,7 @@ const ProfileForm = ({
 }) => {
   const notify = useNotify();
   const translate = useTranslate();
-  const record = useRecordContext<Sale>();
+  const record = useRecordContext<Actor>();
   const { identity, refetch } = useGetIdentity();
   const { isDirty } = useFormState();
   const dataProvider = useDataProvider<CrmDataProvider>();
@@ -132,9 +132,9 @@ const ProfileForm = ({
     },
   });
 
-  const { mutate: mutateSale } = useMutation({
+  const { mutate: mutateActor } = useMutation({
     mutationKey: ["signup"],
-    mutationFn: async (data: SalesFormData) => {
+    mutationFn: async (data: ActorFormData) => {
       if (!record) {
         throw new Error(
           translate("crm.profile.record_not_found", {
@@ -142,7 +142,7 @@ const ProfileForm = ({
           }),
         );
       }
-      return dataProvider.salesUpdate(record.id, data);
+      return dataProvider.actorsUpdate(record.id, data);
     },
     onSuccess: () => {
       refetch();
@@ -168,7 +168,7 @@ const ProfileForm = ({
   };
 
   const handleAvatarUpdate = async (values: any) => {
-    mutateSale(values);
+    mutateActor(values);
   };
 
   return (
@@ -291,7 +291,7 @@ const TextRender = ({
   isEditMode: boolean;
   className?: string;
 }) => {
-  const label = `resources.sales.fields.${source}`;
+  const label = `resources.actors.fields.${source}`;
   if (isEditMode) {
     return (
       <TextInput

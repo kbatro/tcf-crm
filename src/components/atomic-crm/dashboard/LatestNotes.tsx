@@ -5,47 +5,27 @@ import { ReferenceField } from "@/components/admin/reference-field";
 import { TextField } from "@/components/admin/text-field";
 import { Card, CardContent } from "@/components/ui/card";
 
-import type { Contact, ContactNote } from "../types";
+import type { Contact, Note } from "../types";
 
 export const LatestNotes = () => {
   const { identity } = useGetIdentity();
   const translate = useTranslate();
-  const { data: contactNotesData, isPending: contactNotesLoading } = useGetList(
-    "contact_notes",
+  const { data: notesData, isPending: notesLoading } = useGetList<Note>(
+    "notes",
     {
       pagination: { page: 1, perPage: 5 },
-      sort: { field: "date", order: "DESC" },
-      filter: { sales_id: identity?.id },
+      sort: { field: "created_at", order: "DESC" },
+      filter: { actor_id: identity?.id },
     },
     { enabled: Number.isInteger(identity?.id) },
   );
-  const { data: dealNotesData, isPending: dealNotesLoading } = useGetList(
-    "deal_notes",
-    {
-      pagination: { page: 1, perPage: 5 },
-      sort: { field: "date", order: "DESC" },
-      filter: { sales_id: identity?.id },
-    },
-    { enabled: Number.isInteger(identity?.id) },
-  );
-  if (contactNotesLoading || dealNotesLoading) {
-    return null;
-  }
-  // TypeScript guards
-  if (!contactNotesData || !dealNotesData) {
-    return null;
-  }
 
-  const allNotes = ([] as any[])
-    .concat(
-      contactNotesData.map((note) => ({
-        ...note,
-        type: "contactNote",
-      })),
-      dealNotesData.map((note) => ({ ...note, type: "dealNote" })),
-    )
-    .sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())
-    .slice(0, 5);
+  if (notesLoading) {
+    return null;
+  }
+  if (!notesData) {
+    return null;
+  }
 
   return (
     <div>
@@ -59,21 +39,21 @@ export const LatestNotes = () => {
       </div>
       <Card>
         <CardContent>
-          {allNotes.map((note) => (
+          {notesData.map((note) => (
             <div
-              id={`${note.type}_${note.id}`}
-              key={`${note.type}_${note.id}`}
+              id={`note_${note.id}`}
+              key={`note_${note.id}`}
               className="mb-8"
             >
               <div className="text-sm text-muted-foreground">
-                {note.type === "dealNote" ? (
-                  <Deal note={note} />
+                {note.target_type === "intention" ? (
+                  <IntentionRef note={note} />
                 ) : (
-                  <Contact note={note} />
+                  <ContactRef note={note} />
                 )}
                 {", "}
                 {translate("crm.dashboard.latest_notes_added_ago", {
-                  timeAgo: formatDistance(note.date, new Date(), {
+                  timeAgo: formatDistance(note.created_at, new Date(), {
                     addSuffix: true,
                   }),
                 })}
@@ -91,15 +71,17 @@ export const LatestNotes = () => {
   );
 };
 
-const Deal = ({ note }: any) => {
+const IntentionRef = ({ note }: { note: Note }) => {
   const translate = useTranslate();
   return (
     <>
-      {translate("resources.deals.forcedCaseName")}{" "}
+      {translate("resources.intentions.forcedCaseName", {
+        _: "Intention",
+      })}{" "}
       <ReferenceField
         record={note}
-        source="deal_id"
-        reference="deals"
+        source="target_id"
+        reference="intentions"
         link="show"
       >
         <TextField source="name" />
@@ -108,14 +90,14 @@ const Deal = ({ note }: any) => {
   );
 };
 
-const Contact = ({ note }: any) => {
+const ContactRef = ({ note }: { note: Note }) => {
   const translate = useTranslate();
   return (
     <>
       {translate("resources.contacts.forcedCaseName")}{" "}
-      <ReferenceField<ContactNote, Contact>
+      <ReferenceField<Note, Contact>
         record={note}
-        source="contact_id"
+        source="target_id"
         reference="contacts"
         link="show"
       />

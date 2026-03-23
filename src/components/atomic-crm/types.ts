@@ -1,14 +1,6 @@
 import type { Identifier, RaRecord } from "ra-core";
 import type { ComponentType } from "react";
 
-import type {
-  COMPANY_CREATED,
-  CONTACT_CREATED,
-  CONTACT_NOTE_CREATED,
-  DEAL_CREATED,
-  DEAL_NOTE_CREATED,
-} from "./consts";
-
 export type SignUpData = {
   email: string;
   password: string;
@@ -16,7 +8,7 @@ export type SignUpData = {
   last_name: string;
 };
 
-export type SalesFormData = {
+export type ActorFormData = {
   avatar?: string;
   email: string;
   password?: string;
@@ -26,13 +18,15 @@ export type SalesFormData = {
   disabled: boolean;
 };
 
-export type Sale = {
+export type Actor = {
   first_name: string;
   last_name: string;
   administrator: boolean;
   avatar?: RAFile;
   disabled?: boolean;
   user_id: string;
+  type: string;
+  created_at: string;
 
   /**
    * This is a copy of the user's email, to make it easier to handle by react admin
@@ -48,6 +42,48 @@ export type Sale = {
   password?: string;
 } & Pick<RaRecord, "id">;
 
+/** @deprecated Use ActorFormData instead */
+export type SalesFormData = ActorFormData;
+
+/** @deprecated Use Actor instead */
+export type Sale = Actor;
+
+export type GroupType = {
+  name: string;
+  schema: Record<string, string>;
+} & Pick<RaRecord, "id">;
+
+export type Group = {
+  name: string;
+  avatar: RAFile;
+  group_type_id?: Identifier;
+  actor_id?: Identifier;
+  created_at: string;
+  nb_contacts?: number;
+  nb_intentions?: number;
+} & Pick<RaRecord, "id">;
+
+export type GroupProperty = {
+  id: number;
+  group_id: Identifier;
+  key: string;
+  value: string;
+  type: string;
+};
+
+export type GroupMember = {
+  id: number;
+  group_id: Identifier;
+  contact_id: Identifier;
+  role?: string;
+  joined_at: string;
+  left_at?: string;
+};
+
+/**
+ * Company is a backward-compatible alias for Group.
+ * The companies_summary view still returns this shape from groups + group_properties.
+ */
 export type Company = {
   name: string;
   logo: RAFile;
@@ -60,7 +96,7 @@ export type Company = {
   zipcode: string;
   city: string;
   state_abbr: string;
-  sales_id?: Identifier;
+  actor_id?: Identifier;
   created_at: string;
   description: string;
   revenue: string;
@@ -68,7 +104,8 @@ export type Company = {
   country: string;
   context_links?: string[];
   nb_contacts?: number;
-  nb_deals?: number;
+  nb_intentions?: number;
+  group_type_id?: Identifier;
 } & Pick<RaRecord, "id">;
 
 export type EmailAndType = {
@@ -94,7 +131,7 @@ export type Contact = {
   has_newsletter: boolean;
   tags: Identifier[];
   gender: string;
-  sales_id?: Identifier;
+  actor_id?: Identifier;
   status: string;
   background: string;
   phone_jsonb: PhoneNumberAndType[];
@@ -102,40 +139,43 @@ export type Contact = {
   company_name?: string;
 } & Pick<RaRecord, "id">;
 
-export type ContactNote = {
-  contact_id: Identifier;
-  text: string;
-  date: string;
-  sales_id: Identifier;
-  status: string;
-  attachments?: AttachmentNote[];
-} & Pick<RaRecord, "id">;
-
-export type Deal = {
+export type Intention = {
   name: string;
-  company_id: Identifier;
-  contact_ids: Identifier[];
-  category: string;
-  stage: string;
+  type: string;
   description: string;
+  target_type: string;
+  target_id: Identifier;
+  status: string;
+  outcome: string;
   amount: number;
+  expected_closing_date: string;
   created_at: string;
   updated_at: string;
   archived_at?: string;
-  expected_closing_date: string;
-  sales_id: Identifier;
   index: number;
 } & Pick<RaRecord, "id">;
 
-export type DealNote = {
-  deal_id: Identifier;
-  text: string;
-  date: string;
-  sales_id: Identifier;
-  attachments?: AttachmentNote[];
+export type IntentionContact = {
+  id: number;
+  intention_id: Identifier;
+  contact_id: Identifier;
+};
 
-  // This is defined for compatibility with `ContactNote`
-  status?: undefined;
+export type Assignment = {
+  id: number;
+  intention_id: Identifier;
+  actor_id: Identifier;
+  role: string;
+};
+
+export type Note = {
+  target_type: string;
+  target_id: Identifier;
+  text: string;
+  actor_id: Identifier;
+  status?: string;
+  created_at: string;
+  attachments?: AttachmentNote[];
 } & Pick<RaRecord, "id">;
 
 export type Tag = {
@@ -150,55 +190,19 @@ export type Task = {
   text: string;
   due_date: string;
   done_date?: string | null;
-  sales_id?: Identifier;
+  actor_id?: Identifier;
 } & Pick<RaRecord, "id">;
 
-export type ActivityCompanyCreated = {
-  type: typeof COMPANY_CREATED;
-  company_id: Identifier;
-  company: Company;
-  sales_id: Identifier;
-  date: string;
-} & Pick<RaRecord, "id">;
-
-export type ActivityContactCreated = {
-  type: typeof CONTACT_CREATED;
-  company_id: Identifier;
-  sales_id?: Identifier;
-  contact: Contact;
-  date: string;
-} & Pick<RaRecord, "id">;
-
-export type ActivityContactNoteCreated = {
-  type: typeof CONTACT_NOTE_CREATED;
-  sales_id?: Identifier;
-  contactNote: ContactNote;
-  date: string;
-} & Pick<RaRecord, "id">;
-
-export type ActivityDealCreated = {
-  type: typeof DEAL_CREATED;
-  company_id: Identifier;
-  sales_id?: Identifier;
-  deal: Deal;
-  date: string;
+export type CrmEvent = {
+  id: Identifier;
+  timestamp: string;
+  actor_id?: Identifier;
+  actor_type?: string;
+  action: string;
+  target_type: string;
+  target_id: Identifier;
+  metadata: Record<string, unknown>;
 };
-
-export type ActivityDealNoteCreated = {
-  type: typeof DEAL_NOTE_CREATED;
-  sales_id?: Identifier;
-  dealNote: DealNote;
-  date: string;
-};
-
-export type Activity = RaRecord &
-  (
-    | ActivityCompanyCreated
-    | ActivityContactCreated
-    | ActivityContactNoteCreated
-    | ActivityDealCreated
-    | ActivityDealNoteCreated
-  );
 
 export interface RAFile {
   src: string;
@@ -215,11 +219,54 @@ export interface LabeledValue {
   label: string;
 }
 
-export type DealStage = LabeledValue;
+export type IntentionStatus = LabeledValue;
 
 export interface NoteStatus extends LabeledValue {
   color: string;
 }
+
+export type Property = {
+  id: number;
+  contact_id: Identifier;
+  key: string;
+  value: string;
+  type: string;
+};
+
+export type Channel = {
+  id: number;
+  contact_id: Identifier;
+  type: string;
+  value: string;
+  label: string;
+};
+
+export type ContactTag = {
+  id: number;
+  contact_id: Identifier;
+  tag_id: Identifier;
+};
+
+export type Relationship = {
+  contact_a: Identifier;
+  contact_b: Identifier;
+  type?: string;
+  notes?: string;
+  created_at: string;
+} & Pick<RaRecord, "id">;
+
+export type ExternalId = {
+  contact_id: Identifier;
+  source: string;
+  external_id: string;
+} & Pick<RaRecord, "id">;
+
+export type Workflow = {
+  name: string;
+  trigger?: string;
+  steps: Record<string, unknown>[];
+  created_at: string;
+} & Pick<RaRecord, "id">;
 
 export interface ContactGender {
   value: string;

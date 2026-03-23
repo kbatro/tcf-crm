@@ -42,34 +42,34 @@ Deno.serve(async (req) => {
   const { FromFull, Attachments } = json;
   let { ToFull, TextBody, Subject } = json;
 
-  const { Email: salesEmail } = FromFull;
-  if (!salesEmail) {
+  const { Email: actorEmail } = FromFull;
+  if (!actorEmail) {
     // Return a 403 to let Postmark know that it's no use to retry this request
     // https://postmarkapp.com/developer/webhooks/inbound-webhook#errors-and-retries
     return new Response(
-      `Could not extract sales email from FromFull: ${FromFull}`,
+      `Could not extract actor email from FromFull: ${FromFull}`,
       { status: 403 },
     );
   }
 
-  const allSales = await supabaseAdmin.from("sales").select("email");
-  const salesEmails =
-    allSales.data?.map((s: { email: string }) => s.email) ?? [];
+  const allActors = await supabaseAdmin.from("actors").select("email");
+  const actorEmails =
+    allActors.data?.map((s: { email: string }) => s.email) ?? [];
 
-  // If we have an INBOUND_EMAIL and the email is sent to the inbound email address, and the sender is a known sales email,
+  // If we have an INBOUND_EMAIL and the email is sent to the inbound email address, and the sender is a known actor email,
   // then we can try to extract the real recipient email from the body of the email
   if (
     INBOUND_EMAIL &&
     ToFull.length === 1 &&
     ToFull[0].Email === INBOUND_EMAIL &&
-    salesEmails.includes(FromFull.Email)
+    actorEmails.includes(FromFull.Email)
   ) {
     const emailRegex = /[\w.+%-]+@[\w.-]+\.[a-zA-Z]{2,}/g;
     const emailsInBody = TextBody.match(emailRegex) || [];
 
     const candidateEmails = emailsInBody.filter(
       (email: string) =>
-        email !== INBOUND_EMAIL && !salesEmails?.includes(email),
+        email !== INBOUND_EMAIL && !actorEmails?.includes(email),
     );
     if (candidateEmails.length > 0) {
       ToFull = [
@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
     }
 
     await addNoteToContact({
-      salesEmail,
+      actorEmail,
       email,
       domain,
       firstName,
@@ -172,7 +172,7 @@ const checkBody = (json: any) => {
 
 /* To invoke locally:
   1. Run `make start`
-  2. Make sure to have a Sales with email "support@postmarkapp.com" (create it if needed)
+  2. Make sure to have an Actor with email "support@postmarkapp.com" (create it if needed)
   3. OPTIONAL: Create a Contact with email "firstname.lastname@marmelab.com"
   4. In another terminal, run `make start-supabase-functions`
   5. In another terminal, make an HTTP request:

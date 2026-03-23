@@ -40,8 +40,8 @@ describe("i18nProvider", () => {
   it("translates recently added fr crm keys", async () => {
     await i18nProvider.changeLocale("fr");
 
-    expect(i18nProvider.translate("resources.deals.empty.title")).toBe(
-      "Aucune affaire trouvée",
+    expect(i18nProvider.translate("resources.intentions.empty.title")).toBe(
+      "Aucune intention trouvée",
     );
   });
 

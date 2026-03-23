@@ -1,10 +1,10 @@
 import type {
   Company,
   Contact,
-  ContactNote,
-  Deal,
-  DealNote,
-  Sale,
+  CrmEvent,
+  Note,
+  Intention,
+  Actor,
   Tag,
   Task,
 } from "../../../types";
@@ -13,11 +13,11 @@ import type { ConfigurationContextValue } from "../../../root/ConfigurationConte
 export interface Db {
   companies: Required<Company>[];
   contacts: Required<Contact>[];
-  contact_notes: ContactNote[];
-  deals: Deal[];
-  deal_notes: DealNote[];
-  sales: Sale[];
+  notes: Note[];
+  intentions: Intention[];
+  actors: Actor[];
   tags: Tag[];
   tasks: Task[];
+  events: CrmEvent[];
   configuration: Array<{ id: number; config: ConfigurationContextValue }>;
 }

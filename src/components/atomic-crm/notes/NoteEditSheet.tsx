@@ -7,7 +7,6 @@ import {
   WithRecord,
 } from "ra-core";
 import { EditSheet } from "../misc/EditSheet";
-import { foreignKeyMapping } from "./foreignKeyMapping";
 import { NoteInputs } from "./NoteInputs";
 
 export interface NoteEditSheetProps {
@@ -27,18 +26,18 @@ export const NoteEditSheet = ({
     return createPath({
       resource: "contacts",
       type: "show",
-      id: record ? record[foreignKeyMapping["contacts"]] : undefined,
+      id: record ? record.target_id : undefined,
     });
   };
   const getContactRepresentation = useGetRecordRepresentation("contacts");
 
   return (
     <EditSheet
-      resource="contact_notes"
+      resource="notes"
       id={noteId}
       title={
         <ReferenceField
-          source={foreignKeyMapping["contacts"]}
+          source="target_id"
           reference="contacts"
           render={({ referenceRecord }) => (
             <h1 className="text-xl font-semibold truncate pr-10">

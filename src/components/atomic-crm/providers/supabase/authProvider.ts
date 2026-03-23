@@ -6,24 +6,24 @@ import { supabase } from "./supabase";
 
 const baseAuthProvider = supabaseAuthProvider(supabase, {
   getIdentity: async () => {
-    const sale = await getSale();
+    const actor = await getActor();
 
-    if (sale == null) {
+    if (actor == null) {
       throw new Error();
     }
 
     return {
-      id: sale.id,
-      fullName: `${sale.first_name} ${sale.last_name}`,
-      avatar: sale.avatar?.src,
+      id: actor.id,
+      fullName: `${actor.first_name} ${actor.last_name}`,
+      avatar: actor.avatar?.src,
     };
   },
 });
 
 // To speed up checks, we cache the initialization state
-// and the current sale in the local storage. They are cleared on logout.
+// and the current actor in the local storage. They are cleared on logout.
 const IS_INITIALIZED_CACHE_KEY = "RaStore.auth.is_initialized";
-const CURRENT_SALE_CACHE_KEY = "RaStore.auth.current_sale";
+const CURRENT_ACTOR_CACHE_KEY = "RaStore.auth.current_actor";
 
 function getLocalStorage(): Storage | null {
   if (typeof window !== "undefined" && window.localStorage) {
@@ -49,9 +49,9 @@ export async function getIsInitialized() {
   return isInitialized;
 }
 
-const getSale = async () => {
+const getActor = async () => {
   const storage = getLocalStorage();
-  const cachedValue = storage?.getItem(CURRENT_SALE_CACHE_KEY);
+  const cachedValue = storage?.getItem(CURRENT_ACTOR_CACHE_KEY);
   if (cachedValue != null) {
     return JSON.parse(cachedValue);
   }
@@ -64,25 +64,25 @@ const getSale = async () => {
     return undefined;
   }
 
-  const { data: dataSale, error: errorSale } = await supabase
-    .from("sales")
+  const { data: dataActor, error: errorActor } = await supabase
+    .from("actors")
     .select("id, first_name, last_name, avatar, administrator")
     .match({ user_id: dataSession?.session?.user.id })
     .single();
 
-  // Shouldn't happen either as all users are sales but just in case
-  if (dataSale == null || errorSale) {
+  // Shouldn't happen either as all users are actors but just in case
+  if (dataActor == null || errorActor) {
     return undefined;
   }
 
-  storage?.setItem(CURRENT_SALE_CACHE_KEY, JSON.stringify(dataSale));
-  return dataSale;
+  storage?.setItem(CURRENT_ACTOR_CACHE_KEY, JSON.stringify(dataActor));
+  return dataActor;
 };
 
 function clearCache() {
   const storage = getLocalStorage();
   storage?.removeItem(IS_INITIALIZED_CACHE_KEY);
-  storage?.removeItem(CURRENT_SALE_CACHE_KEY);
+  storage?.removeItem(CURRENT_ACTOR_CACHE_KEY);
 }
 
 export const authProvider: AuthProvider = {
@@ -143,11 +143,11 @@ export const authProvider: AuthProvider = {
     if (!isInitialized) return false;
 
     // Get the current user
-    const sale = await getSale();
-    if (sale == null) return false;
+    const actor = await getActor();
+    if (actor == null) return false;
 
-    // Compute access rights from the sale role
-    const role = sale.administrator ? "admin" : "user";
+    // Compute access rights from the actor role
+    const role = actor.administrator ? "admin" : "user";
     return canAccess(role, params);
   },
   getAuthorizationDetails(authorizationId: string) {

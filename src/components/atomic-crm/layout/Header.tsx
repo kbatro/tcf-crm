@@ -21,8 +21,8 @@ const Header = () => {
     currentPath = "/contacts";
   } else if (matchPath("/companies/*", location.pathname)) {
     currentPath = "/companies";
-  } else if (matchPath("/deals/*", location.pathname)) {
-    currentPath = "/deals";
+  } else if (matchPath("/intentions/*", location.pathname)) {
+    currentPath = "/intentions";
   } else {
     currentPath = false;
   }
@@ -71,11 +71,11 @@ const Header = () => {
                     isActive={currentPath === "/companies"}
                   />
                   <NavigationTab
-                    label={translate("resources.deals.name", {
+                    label={translate("resources.intentions.name", {
                       smart_count: 2,
                     })}
-                    to="/deals"
-                    isActive={currentPath === "/deals"}
+                    to="/intentions"
+                    isActive={currentPath === "/intentions"}
                   />
                 </nav>
               </div>
@@ -84,7 +84,7 @@ const Header = () => {
                 <RefreshButton />
                 <UserMenu>
                   <ProfileMenu />
-                  <CanAccess resource="sales" action="list">
+                  <CanAccess resource="actors" action="list">
                     <UsersMenu />
                   </CanAccess>
                   <CanAccess resource="configuration" action="edit">
@@ -130,9 +130,9 @@ const UsersMenu = () => {
   }
   return (
     <DropdownMenuItem asChild onClick={userMenuContext.onClose}>
-      <Link to="/sales" className="flex items-center gap-2">
+      <Link to="/actors" className="flex items-center gap-2">
         <Users />
-        {translate("resources.sales.name", { smart_count: 2 })}
+        {translate("resources.actors.name", { smart_count: 2 })}
       </Link>
     </DropdownMenuItem>
   );

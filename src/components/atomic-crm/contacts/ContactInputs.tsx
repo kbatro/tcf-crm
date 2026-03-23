@@ -17,7 +17,7 @@ import {
   translateContactGenderLabel,
   translatePersonalInfoTypeLabel,
 } from "./contactGender";
-import type { Sale } from "../types";
+import type { Actor } from "../types";
 import { Avatar } from "./Avatar";
 import { AutocompleteCompanyInput } from "../companies/AutocompleteCompanyInput.tsx";
 
@@ -206,8 +206,8 @@ const ContactMiscInputs = () => {
       <TextInput source="background" multiline helperText={false} />
       <BooleanInput source="has_newsletter" helperText={false} />
       <ReferenceInput
-        reference="sales"
-        source="sales_id"
+        reference="actors"
+        source="actor_id"
         sort={{ field: "last_name", order: "ASC" }}
         filter={{
           "disabled@neq": true,
@@ -215,7 +215,7 @@ const ContactMiscInputs = () => {
       >
         <SelectInput
           helperText={false}
-          optionText={saleOptionRenderer}
+          optionText={actorOptionRenderer}
           validate={required()}
         />
       </ReferenceInput>
@@ -223,5 +223,5 @@ const ContactMiscInputs = () => {
   );
 };
 
-const saleOptionRenderer = (choice: Sale) =>
+const actorOptionRenderer = (choice: Actor) =>
   `${choice.first_name} ${choice.last_name}`;

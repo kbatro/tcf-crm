@@ -41,7 +41,7 @@ export const TasksListByDueDate = ({
       filter: {
         ...(filterByContact != null
           ? { contact_id: filterByContact }
-          : { sales_id: identity?.id }),
+          : { actor_id: identity?.id }),
       },
     },
     { enabled: filterByContact != null ? true : !!identity },

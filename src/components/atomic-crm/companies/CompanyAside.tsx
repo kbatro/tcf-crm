@@ -18,7 +18,7 @@ import { useConfigurationContext } from "../root/ConfigurationContext";
 import type { Company } from "../types";
 import { getTranslatedCompanySizeLabel } from "./getTranslatedCompanySizeLabel";
 import { sizes } from "./sizes";
-import { useGetSalesName } from "../sales/useGetSalesName";
+import { useGetActorName } from "../actors/useGetActorName";
 
 interface CompanyAsideProps {
   link?: string;
@@ -180,13 +180,13 @@ export const AdditionalInfo = ({ record }: { record: Company }) => {
   const translate = useTranslate();
   const [locale = "en"] = useLocaleState();
   const { identity } = useGetIdentity();
-  const isCurrentUser = record.sales_id === identity?.id;
-  const salesName = useGetSalesName(record.sales_id, {
+  const isCurrentUser = record.actor_id === identity?.id;
+  const actorName = useGetActorName(record.actor_id, {
     enabled: !isCurrentUser,
   });
   if (
     !record.created_at &&
-    !record.sales_id &&
+    !record.actor_id &&
     !record.description &&
     !record.context_links
   ) {
@@ -222,13 +222,13 @@ export const AdditionalInfo = ({ record }: { record: Company }) => {
           )}
         </div>
       )}
-      {record.sales_id !== null && (
+      {record.actor_id !== null && (
         <div className="inline-flex text-sm text-muted-foreground mb-1">
           {translate(
             isCurrentUser
               ? "resources.companies.followed_by_you"
               : "resources.companies.followed_by",
-            { name: salesName },
+            { name: actorName },
           )}
         </div>
       )}

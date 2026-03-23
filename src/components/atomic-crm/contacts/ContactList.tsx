@@ -13,7 +13,7 @@ import { List } from "@/components/admin/list";
 import { SortButton } from "@/components/admin/sort-button";
 import { Card } from "@/components/ui/card";
 
-import type { Company, Contact, Sale, Tag } from "../types";
+import type { Actor, Company, Contact, Tag } from "../types";
 import { ContactEmpty } from "./ContactEmpty";
 import { ContactImportButton } from "./ContactImportButton";
 import {
@@ -129,7 +129,7 @@ const exporter: Exporter<Contact> = async (records, fetchRelatedRecords) => {
     "company_id",
     "companies",
   );
-  const sales = await fetchRelatedRecords<Sale>(records, "sales_id", "sales");
+  const actors = await fetchRelatedRecords<Actor>(records, "actor_id", "actors");
   const tags = await fetchRelatedRecords<Tag>(records, "tags", "tags");
 
   const contacts = records.map((contact) => {
@@ -139,8 +139,8 @@ const exporter: Exporter<Contact> = async (records, fetchRelatedRecords) => {
         contact.company_id != null
           ? companies[contact.company_id].name
           : undefined,
-      sales: `${sales[contact.sales_id].first_name} ${
-        sales[contact.sales_id].last_name
+      actor: `${actors[contact.actor_id].first_name} ${
+        actors[contact.actor_id].last_name
       }`,
       tags: contact.tags.map((tagId) => tags[tagId].name).join(", "),
       email_work: contact.email_jsonb?.find((email) => email.type === "Work")

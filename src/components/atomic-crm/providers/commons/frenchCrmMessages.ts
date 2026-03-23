@@ -23,7 +23,7 @@ export const frenchCrmMessages = {
         country: "Pays",
         description: "Description",
         context_links: "URLs de contexte",
-        sales_id: "Responsable de compte",
+        actor_id: "Assigné à",
       },
       empty: {
         description: "Il semble que la liste de vos entreprises soit vide.",
@@ -46,7 +46,7 @@ export const frenchCrmMessages = {
       followed_by_you: "Suivie par vous",
       no_contacts: "Aucun contact",
       nb_contacts: "%{smart_count} contact |||| %{smart_count} contacts",
-      nb_deals: "%{smart_count} affaire |||| %{smart_count} affaires",
+      nb_intentions: "%{smart_count} intention |||| %{smart_count} intentions",
       sizes: {
         one_employee: "1 employé",
         two_to_nine_employees: "2-9 employés",
@@ -87,7 +87,7 @@ export const frenchCrmMessages = {
         linkedin_url: "URL LinkedIn",
         background: "Informations de contexte",
         has_newsletter: "Abonné à la newsletter",
-        sales_id: "Responsable de compte",
+        actor_id: "Assigné à",
       },
       action: {
         add: "Ajouter un contact",
@@ -179,47 +179,51 @@ export const frenchCrmMessages = {
         title: "Contacts chauds",
       },
     },
-    deals: {
-      name: "Affaire |||| Affaires",
+    intentions: {
+      name: "Intention |||| Intentions",
+      forcedCaseName: "Intention",
       fields: {
         name: "Nom",
         description: "Description",
-        company_id: "Entreprise",
+        target_id: "Entreprise",
         contact_ids: "Contacts",
-        category: "Catégorie",
+        type: "Type",
         amount: "Budget",
         expected_closing_date: "Date de clôture prévue",
-        stage: "Étape",
+        status: "Statut",
       },
       action: {
-        back_to_deal: "Retour à l'affaire",
-        create: "Créer une affaire",
-        new: "Nouvelle affaire",
+        back_to_intention: "Retour à l'intention",
+        create: "Créer une intention",
+        new: "Nouvelle intention",
       },
       field_categories: {
         misc: "Divers",
       },
       archived: {
         action: "Archiver",
-        error: "Erreur : affaire non archivée",
-        list_title: "Affaires archivées",
-        success: "Affaire archivée",
-        title: "Affaire archivée",
-        view: "Afficher les affaires archivées",
+        error: "Erreur : intention non archivée",
+        list_title: "Intentions archivées",
+        success: "Intention archivée",
+        title: "Intention archivée",
+        view: "Afficher les intentions archivées",
+      },
+      filters: {
+        only_mine: "Seulement les intentions que je gère",
       },
       inputs: {
         linked_to: "Lié à",
       },
       unarchived: {
         action: "Renvoyer au tableau",
-        error: "Erreur : affaire non désarchivée",
-        success: "Affaire désarchivée",
+        error: "Erreur : intention non désarchivée",
+        success: "Intention désarchivée",
       },
-      updated: "Affaire mise à jour",
+      updated: "Intention mise à jour",
       empty: {
-        before_create: "avant de créer une affaire.",
-        description: "Il semble que votre liste d'affaires soit vide.",
-        title: "Aucune affaire trouvée",
+        before_create: "avant de créer une intention.",
+        description: "Il semble que votre liste d'intentions soit vide.",
+        title: "Aucune intention trouvée",
       },
       invalid_date: "Date invalide",
     },
@@ -266,7 +270,7 @@ export const frenchCrmMessages = {
         show_options: "Afficher les options",
       },
     },
-    sales: {
+    actors: {
       name: "Utilisateur |||| Utilisateurs",
       fields: {
         first_name: "Prénom",
@@ -371,7 +375,7 @@ export const frenchCrmMessages = {
         creating: "Création...",
         initial_user_created: "Utilisateur initial créé avec succès",
       },
-      welcome_title: "Bienvenue sur Atomic CRM",
+      welcome_title: "Bienvenue sur TCF CRM",
     },
     common: {
       activity: "Activité",
@@ -397,24 +401,26 @@ export const frenchCrmMessages = {
       you_added_contact: "Vous avez ajouté le contact",
       added_note: "%{name} a ajouté une note sur",
       you_added_note: "Vous avez ajouté une note sur",
-      added_note_about_deal: "%{name} a ajouté une note sur l'affaire",
-      you_added_note_about_deal: "Vous avez ajouté une note sur l'affaire",
-      added_deal: "%{name} a ajouté l'affaire",
-      you_added_deal: "Vous avez ajouté l'affaire",
+      added_note_about_intention:
+        "%{name} a ajouté une note sur l'intention",
+      you_added_note_about_intention:
+        "Vous avez ajouté une note sur l'intention",
+      added_intention: "%{name} a ajouté l'intention",
+      you_added_intention: "Vous avez ajouté l'intention",
       at_company: "chez",
       to: "à",
       load_more: "Charger plus d'activité",
     },
     dashboard: {
-      deals_chart: "Revenus des affaires à venir",
-      deals_pipeline: "Pipeline des affaires",
+      intentions_chart: "Revenus des intentions à venir",
+      intentions_pipeline: "Pipeline des intentions",
       latest_activity: "Dernière activité",
       latest_activity_error:
         "Erreur lors du chargement de la dernière activité",
       latest_notes: "Mes dernières notes",
       latest_notes_added_ago: "ajouté %{timeAgo}",
       stepper: {
-        install: "Installer Atomic CRM",
+        install: "Installer TCF CRM",
         progress: "%{step}/3 terminé",
         whats_next: "Et ensuite ?",
       },
@@ -462,13 +468,13 @@ export const frenchCrmMessages = {
         sectors: "Secteurs",
       },
       dark_mode_logo: "Logo du mode sombre",
-      deals: {
-        categories: "Catégories",
+      intentions: {
+        types: "Types",
         currency: "Devise",
-        pipeline_help:
-          "Sélectionnez les étapes d'affaire à considérer comme des affaires dans le pipeline.",
-        pipeline_statuses: "Statuts des pipelines",
-        stages: "Étapes",
+        success_help:
+          "Sélectionnez les statuts d'intention à considérer comme des succès.",
+        success_statuses: "Statuts de succès",
+        statuses: "Statuts",
       },
       light_mode_logo: "Logo du mode clair",
       notes: {
@@ -511,7 +517,7 @@ export const frenchCrmMessages = {
     profile: {
       inbound: {
         description:
-          "Vous pouvez commencer à envoyer des e-mails vers l'adresse de réception de votre serveur, par exemple en l'ajoutant au champ %{field}. Atomic CRM traitera les e-mails et ajoutera des notes aux contacts correspondants.",
+          "Vous pouvez commencer à envoyer des e-mails vers l'adresse de réception de votre serveur, par exemple en l'ajoutant au champ %{field}. TCF CRM traitera les e-mails et ajoutera des notes aux contacts correspondants.",
         title: "E-mail entrant",
       },
       password: {

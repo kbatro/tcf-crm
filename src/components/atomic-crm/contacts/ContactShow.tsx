@@ -147,9 +147,10 @@ const ContactShowContentMobile = () => {
 
           <TabsContent value="notes" className="mt-2">
             <ReferenceManyField
-              target="contact_id"
-              reference="contact_notes"
-              sort={{ field: "date", order: "DESC" }}
+              target="target_id"
+              reference="notes"
+              sort={{ field: "created_at", order: "DESC" }}
+              filter={{ target_type: "contact" }}
               empty={
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <p className="text-muted-foreground mb-4">
@@ -270,9 +271,10 @@ const ContactShowContent = () => {
               </div>
             </div>
             <ReferenceManyField
-              target="contact_id"
-              reference="contact_notes"
-              sort={{ field: "date", order: "DESC" }}
+              target="target_id"
+              reference="notes"
+              sort={{ field: "created_at", order: "DESC" }}
+              filter={{ target_type: "contact" }}
               empty={
                 <NoteCreate reference="contacts" showStatus className="mt-4" />
               }

@@ -12,7 +12,7 @@ const singleNote = {
   contact_id: 3,
   date: "2026-03-17T13:50:00.000Z",
   id: 9,
-  sales_id: 0,
+  actor_id: 0,
   status: "warm",
   text: "Only note in the list",
 };
@@ -78,7 +78,7 @@ const NotesIteratorHarness = ({
     page: 1,
     perPage: 25,
     refetch: vi.fn(),
-    resource: "contact_notes",
+    resource: "notes",
     selectedIds: [],
     setFilters: vi.fn(),
     setPage,

@@ -52,12 +52,12 @@ export const CompanyListFilter = () => {
 
       <FilterCategory
         icon={<Users className="h-4 w-4" />}
-        label="resources.companies.fields.sales_id"
+        label="resources.companies.fields.actor_id"
       >
         <ToggleFilterButton
           className="w-full justify-between"
           label={translate("crm.common.me")}
-          value={{ sales_id: identity?.id }}
+          value={{ actor_id: identity?.id }}
         />
       </FilterCategory>
     </div>

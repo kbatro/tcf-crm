@@ -24,7 +24,7 @@ const testI18nProvider = {
         "resources.notes.fields.attachments": "Attachments",
         "resources.notes.fields.status": "Status",
         "resources.notes.fields.contact_id": "Contact",
-        "resources.notes.fields.deal_id": "Deal",
+        "resources.notes.fields.intention_id": "Intention",
       }) as Record<string, string>
     )[key] ?? key,
   changeLocale: () => Promise.resolve(),
@@ -34,8 +34,8 @@ const testI18nProvider = {
 const dataProvider = fakeDataProvider({
   notes: [],
   contacts: [],
-  deals: [],
-  sales: [],
+  intentions: [],
+  actors: [],
 });
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -131,15 +131,15 @@ describe("NoteInputs", () => {
     await expect.element(screen.getByText("Contact")).toBeVisible();
   });
 
-  it("renders the deal reference selector when selectReference is deals", async () => {
+  it("renders the intention reference selector when selectReference is intentions", async () => {
     const screen = await render(
-      <NoteInputs selectReference reference="deals" />,
+      <NoteInputs selectReference reference="intentions" />,
       {
         wrapper: Wrapper,
       },
     );
 
-    await expect.element(screen.getByText("Deal")).toBeVisible();
+    await expect.element(screen.getByText("Intention")).toBeVisible();
   });
 
   it("does not render a reference selector when selectReference is not set", async () => {
@@ -148,7 +148,9 @@ describe("NoteInputs", () => {
     });
 
     await expect.element(screen.getByText("Contact")).not.toBeInTheDocument();
-    await expect.element(screen.getByText("Deal")).not.toBeInTheDocument();
+    await expect
+      .element(screen.getByText("Intention"))
+      .not.toBeInTheDocument();
   });
 
   it("should have the current date as default value for the date input", async () => {
@@ -176,7 +178,7 @@ describe("NoteInputs", () => {
         >
           <Form
             defaultValues={{
-              date: "2024-01-01T12:00",
+              created_at: "2024-01-01T12:00",
             }}
           >
             {children}

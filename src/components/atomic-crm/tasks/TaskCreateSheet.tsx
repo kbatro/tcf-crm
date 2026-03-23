@@ -9,7 +9,6 @@ import {
   useUpdate,
 } from "ra-core";
 import { CreateSheet } from "../misc/CreateSheet";
-import { foreignKeyMapping } from "../notes/foreignKeyMapping";
 import { TaskFormContent } from "./TaskFormContent";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -42,7 +41,7 @@ export const TaskCreateSheet = ({
   if (!identity) return null;
 
   const handleSuccess = async (data: any) => {
-    const referenceRecordId = data[foreignKeyMapping["contacts"]];
+    const referenceRecordId = data.contact_id;
     if (!referenceRecordId) return;
     const { data: contact } = await dataProvider.getOne("contacts", {
       id: referenceRecordId,
@@ -79,7 +78,7 @@ export const TaskCreateSheet = ({
         type: "none",
         contact_id,
         due_date: new Date().toISOString(),
-        sales_id: identity.id,
+        actor_id: identity.id,
       }}
       mutationOptions={{
         onSuccess: handleSuccess,

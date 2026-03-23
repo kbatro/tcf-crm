@@ -17,7 +17,7 @@ import { TaskCreateSheet } from "@/components/atomic-crm/tasks/TaskCreateSheet";
 import type {
   Company,
   Contact,
-  Sale,
+  Actor,
   Tag,
   Task,
 } from "@/components/atomic-crm/types";
@@ -61,9 +61,9 @@ const resourceDefinitions = {
   configuration: {
     name: "configuration",
   },
-  contact_notes: {
+  notes: {
     hasList: true,
-    name: "contact_notes",
+    name: "notes",
   },
   contacts: {
     hasCreate: true,
@@ -77,9 +77,9 @@ const resourceDefinitions = {
     name: "contacts_summary",
     recordRepresentation: getContactName,
   },
-  sales: {
+  actors: {
     hasList: true,
-    name: "sales",
+    name: "actors",
     recordRepresentation: getSaleName,
   },
   tags: {
@@ -108,7 +108,7 @@ const createTestAuthProvider = (): AuthProvider => ({
   logout: async () => undefined,
 });
 
-const baseSale: Sale = {
+const baseActor: Actor = {
   administrator: true,
   avatar: DEFAULT_USER.avatar,
   disabled: false,
@@ -144,7 +144,7 @@ export const createCrmDb = (overrides: Partial<Db> = {}): Db =>
     contacts: [],
     deal_notes: [],
     deals: [],
-    sales: [baseSale],
+    actors: [baseActor],
     tags: [],
     tasks: [],
     ...overrides,
@@ -166,7 +166,7 @@ export const buildContact = (overrides: Partial<Contact> = {}): Contact => ({
   linkedin_url: null,
   nb_tasks: 0,
   phone_jsonb: [],
-  sales_id: 0,
+  actor_id: 0,
   status: "warm",
   tags: [],
   title: "CTO",

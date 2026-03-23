@@ -1,7 +1,7 @@
 import { useGetList, useTimeout } from "ra-core";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { Contact, ContactNote } from "../types";
+import type { Contact, Note } from "../types";
 import { DashboardActivityLog } from "./DashboardActivityLog";
 import { DashboardStepper } from "./DashboardStepper";
 import { Welcome } from "./Welcome";
@@ -51,13 +51,16 @@ export const MobileDashboard = () => {
   } = useGetList<Contact>("contacts", {
     pagination: { page: 1, perPage: 1 },
   });
-  const { total: totalContactNotes, isPending: isPendingContactNotes } =
-    useGetList<ContactNote>("contact_notes", {
+  const { total: totalNotes, isPending: isPendingNotes } = useGetList<Note>(
+    "notes",
+    {
       pagination: { page: 1, perPage: 1 },
-    });
+      filter: { target_type: "contact" },
+    },
+  );
   const oneSecondHasPassed = useTimeout(1000);
 
-  const isPending = isPendingContact || isPendingContactNotes;
+  const isPending = isPendingContact || isPendingNotes;
 
   if (isPending) {
     return oneSecondHasPassed ? <Loading /> : null;
@@ -71,7 +74,7 @@ export const MobileDashboard = () => {
     );
   }
 
-  if (!totalContactNotes) {
+  if (!totalNotes) {
     return (
       <Wrapper>
         <DashboardStepper step={2} contactId={dataContact?.[0]?.id} />

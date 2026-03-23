@@ -11,7 +11,7 @@ export const NotesIterator = ({
   reference,
   showStatus,
 }: {
-  reference: "contacts" | "deals";
+  reference: "contacts" | "intentions";
   showStatus?: boolean;
 }) => {
   const { infinitePaginationContextValue, isPending, error, data } =

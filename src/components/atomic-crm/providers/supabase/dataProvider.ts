@@ -7,12 +7,11 @@ import {
   type ResourceCallbacks,
 } from "ra-core";
 import type {
-  ContactNote,
-  Deal,
-  DealNote,
+  Actor,
+  ActorFormData,
+  Note,
+  Intention,
   RAFile,
-  Sale,
-  SalesFormData,
   SignUpData,
 } from "../../types";
 import type { ConfigurationContextValue } from "../../root/ConfigurationContext";
@@ -36,18 +35,18 @@ const baseDataProvider = supabaseDataProvider({
   sortOrder: "asc,desc.nullslast" as any,
 });
 
-const processCompanyLogo = async (params: any) => {
-  const logo = params.data.logo;
+const processGroupLogo = async (params: any) => {
+  const avatar = params.data.logo;
 
-  if (logo?.rawFile instanceof File) {
-    await uploadToBucket(logo);
+  if (avatar?.rawFile instanceof File) {
+    await uploadToBucket(avatar);
   }
 
   return {
     ...params,
     data: {
       ...params.data,
-      logo,
+      logo: avatar,
     },
   };
 };
@@ -61,24 +60,6 @@ const dataProviderWithCustomMethods = {
     if (resource === "contacts") {
       return baseDataProvider.getList("contacts_summary", params);
     }
-    if (resource === "activity_log") {
-      const { data, total } = await baseDataProvider.getList(
-        "activity_log",
-        params,
-      );
-      // Rename snake_case view columns to camelCase to match Activity type
-      return {
-        data: data.map((row: any) => ({
-          ...row,
-          contactNote: row.contact_note ?? undefined,
-          dealNote: row.deal_note ?? undefined,
-          contact_note: undefined,
-          deal_note: undefined,
-        })),
-        total,
-      };
-    }
-
     return baseDataProvider.getList(resource, params);
   },
   async getOne(resource: string, params: any) {
@@ -109,7 +90,6 @@ const dataProviderWithCustomMethods = {
       throw new Error(response?.error?.message || "Failed to create account");
     }
 
-    // Update the is initialized cache
     getIsInitialized._is_initialized_cache = true;
 
     return {
@@ -118,8 +98,8 @@ const dataProviderWithCustomMethods = {
       password,
     };
   },
-  async salesCreate(body: SalesFormData) {
-    const { data, error } = await supabase.functions.invoke<{ data: Sale }>(
+  async actorCreate(body: ActorFormData) {
+    const { data, error } = await supabase.functions.invoke<{ data: Actor }>(
       "users",
       {
         method: "POST",
@@ -141,19 +121,19 @@ const dataProviderWithCustomMethods = {
 
     return data.data;
   },
-  async salesUpdate(
+  async actorUpdate(
     id: Identifier,
-    data: Partial<Omit<SalesFormData, "password">>,
+    data: Partial<Omit<ActorFormData, "password">>,
   ) {
     const { email, first_name, last_name, administrator, avatar, disabled } =
       data;
 
     const { data: updatedData, error } = await supabase.functions.invoke<{
-      data: Sale;
+      data: Actor;
     }>("users", {
       method: "PATCH",
       body: {
-        sales_id: id,
+        actor_id: id,
         email,
         first_name,
         last_name,
@@ -164,7 +144,7 @@ const dataProviderWithCustomMethods = {
     });
 
     if (!updatedData || error) {
-      console.error("salesCreate.error", error);
+      console.error("actorUpdate.error", error);
       throw new Error("Failed to update account manager");
     }
 
@@ -175,7 +155,7 @@ const dataProviderWithCustomMethods = {
       await supabase.functions.invoke<boolean>("update_password", {
         method: "PATCH",
         body: {
-          sales_id: id,
+          actor_id: id,
         },
       });
 
@@ -186,27 +166,28 @@ const dataProviderWithCustomMethods = {
 
     return passwordUpdated;
   },
-  async unarchiveDeal(deal: Deal) {
-    // get all deals where stage is the same as the deal to unarchive
-    const { data: deals } = await baseDataProvider.getList<Deal>("deals", {
-      filter: { stage: deal.stage },
-      pagination: { page: 1, perPage: 1000 },
-      sort: { field: "index", order: "ASC" },
-    });
+  async unarchiveIntention(intention: Intention) {
+    const { data: intentions } = await baseDataProvider.getList<Intention>(
+      "intentions",
+      {
+        filter: { status: intention.status },
+        pagination: { page: 1, perPage: 1000 },
+        sort: { field: "index", order: "ASC" },
+      },
+    );
 
-    // set index for each deal starting from 1, if the deal to unarchive is found, set its index to the last one
-    const updatedDeals = deals.map((d, index) => ({
-      ...d,
-      index: d.id === deal.id ? 0 : index + 1,
-      archived_at: d.id === deal.id ? null : d.archived_at,
+    const updatedIntentions = intentions.map((i, index) => ({
+      ...i,
+      index: i.id === intention.id ? 0 : index + 1,
+      archived_at: i.id === intention.id ? null : i.archived_at,
     }));
 
     return await Promise.all(
-      updatedDeals.map((updatedDeal) =>
-        baseDataProvider.update("deals", {
-          id: updatedDeal.id,
-          data: updatedDeal,
-          previousData: deals.find((d) => d.id === updatedDeal.id),
+      updatedIntentions.map((updatedIntention) =>
+        baseDataProvider.update("intentions", {
+          id: updatedIntention.id,
+          data: updatedIntention,
+          previousData: intentions.find((i) => i.id === updatedIntention.id),
         }),
       ),
     );
@@ -267,8 +248,8 @@ const lifeCycleCallbacks: ResourceCallbacks[] = [
     },
   },
   {
-    resource: "contact_notes",
-    beforeSave: async (data: ContactNote, _, __) => {
+    resource: "notes",
+    beforeSave: async (data: Note, _, __) => {
       if (data.attachments) {
         data.attachments = await Promise.all(
           data.attachments.map((fi) => uploadToBucket(fi)),
@@ -278,19 +259,8 @@ const lifeCycleCallbacks: ResourceCallbacks[] = [
     },
   },
   {
-    resource: "deal_notes",
-    beforeSave: async (data: DealNote, _, __) => {
-      if (data.attachments) {
-        data.attachments = await Promise.all(
-          data.attachments.map((fi) => uploadToBucket(fi)),
-        );
-      }
-      return data;
-    },
-  },
-  {
-    resource: "sales",
-    beforeSave: async (data: Sale, _, __) => {
+    resource: "actors",
+    beforeSave: async (data: Actor, _, __) => {
       if (data.avatar) {
         await uploadToBucket(data.avatar);
       }
@@ -324,7 +294,7 @@ const lifeCycleCallbacks: ResourceCallbacks[] = [
       ])(params);
     },
     beforeCreate: async (params) => {
-      const createParams = await processCompanyLogo(params);
+      const createParams = await processGroupLogo(params);
 
       return {
         ...createParams,
@@ -335,7 +305,7 @@ const lifeCycleCallbacks: ResourceCallbacks[] = [
       };
     },
     beforeUpdate: async (params) => {
-      return await processCompanyLogo(params);
+      return await processGroupLogo(params);
     },
   },
   {
@@ -345,9 +315,9 @@ const lifeCycleCallbacks: ResourceCallbacks[] = [
     },
   },
   {
-    resource: "deals",
+    resource: "intentions",
     beforeGetList: async (params) => {
-      return applyFullTextSearch(["name", "category", "description"])(params);
+      return applyFullTextSearch(["name", "type", "description"])(params);
     },
   },
 ];
@@ -389,7 +359,6 @@ const applyFullTextSearch = (columns: string[]) => (params: GetListParams) => {
 
 const uploadToBucket = async (fi: RAFile) => {
   if (!fi.src.startsWith("blob:") && !fi.src.startsWith("data:")) {
-    // Sign URL check if path exists in the bucket
     if (fi.path) {
       const { error } = await supabase.storage
         .from(ATTACHMENTS_BUCKET)
@@ -413,10 +382,6 @@ const uploadToBucket = async (fi: RAFile) => {
     : fi.rawFile;
 
   if (dataContent == null) {
-    // We weren't able to download the file from its src (e.g. user must be signed in on another website to access it)
-    // or the file has no content (not probable)
-    // In that case, just return it as is: when trying to download it, users should be redirected to the other website
-    // and see they need to be signed in. It will then be their responsibility to upload the file back to the note.
     return fi;
   }
 
@@ -441,7 +406,6 @@ const uploadToBucket = async (fi: RAFile) => {
   fi.path = filePath;
   fi.src = data.publicUrl;
 
-  // save MIME type
   const mimeType = file.type;
   fi.type = mimeType;
 

@@ -106,7 +106,7 @@ export const AddTask = ({
           type: "none",
           contact_id: contact?.id,
           due_date: new Date().toISOString(),
-          sales_id: identity.id,
+          actor_id: identity.id,
         }}
         mutationOptions={{ onSuccess: handleSuccess }}
       >

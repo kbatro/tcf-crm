@@ -17,10 +17,10 @@ import { Markdown } from "../misc/Markdown";
 import { MobileBackButton } from "../misc/MobileBackButton";
 import { RelativeDate } from "../misc/RelativeDate";
 import { Status } from "../misc/Status";
-import type { ContactNote } from "../types";
+import type { Note } from "../types";
 import { NoteAttachments } from "./NoteAttachments";
 import { NoteEditSheet } from "./NoteEditSheet";
-import { useGetSalesName } from "../sales/useGetSalesName";
+import { useGetActorName } from "../actors/useGetActorName";
 
 export const NoteShowPage = () => {
   const translate = useTranslate();
@@ -31,12 +31,12 @@ export const NoteShowPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const getContactRepresentation = useGetRecordRepresentation("contacts");
 
-  const { data: note, isPending } = useGetOne<ContactNote>("contact_notes", {
+  const { data: note, isPending } = useGetOne<Note>("notes", {
     id: noteId!,
   });
   const { identity } = useGetIdentity();
-  const isCurrentUser = note?.sales_id === identity?.id;
-  const salesName = useGetSalesName(note?.sales_id, {
+  const isCurrentUser = note?.actor_id === identity?.id;
+  const actorName = useGetActorName(note?.actor_id, {
     enabled: note && !isCurrentUser,
   });
 
@@ -56,8 +56,8 @@ export const NoteShowPage = () => {
             <h1 className="truncate text-xl font-semibold">
               <ReferenceField
                 record={note}
-                resource="contact_notes"
-                source="contact_id"
+                resource="notes"
+                source="target_id"
                 reference="contacts"
                 link={false}
                 render={({ referenceRecord }) =>
@@ -90,11 +90,11 @@ export const NoteShowPage = () => {
         <div className="mb-4">
           <div className="flex items-center space-x-2 w-full text-sm text-muted-foreground">
             <span>
-              {isCurrentUser ? translate("resources.notes.me") : salesName}{" "}
+              {isCurrentUser ? translate("resources.notes.me") : actorName}{" "}
             </span>
             {note.status && <Status status={note.status} />}
             <div className="flex-1" />
-            <RelativeDate date={note.date} />
+            <RelativeDate date={note.created_at} />
           </div>
         </div>
 

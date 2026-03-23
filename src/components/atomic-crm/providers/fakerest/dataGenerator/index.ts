@@ -1,24 +1,24 @@
-import { generateCompanies } from "./companies";
-import { generateContactNotes } from "./contactNotes";
+import { generateEvents } from "./events";
+import { generateGroups } from "./groups";
+import { generateNotes } from "./notes";
 import { generateContacts } from "./contacts";
-import { generateDealNotes } from "./dealNotes";
-import { generateDeals } from "./deals";
+import { generateIntentions } from "./intentions";
 import { finalize } from "./finalize";
-import { generateSales } from "./sales";
+import { generateActors } from "./actors";
 import { generateTags } from "./tags";
 import { generateTasks } from "./tasks";
 import type { Db } from "./types";
 
 export default (): Db => {
   const db = {} as Db;
-  db.sales = generateSales(db);
+  db.actors = generateActors(db);
   db.tags = generateTags(db);
-  db.companies = generateCompanies(db);
+  db.companies = generateGroups(db);
   db.contacts = generateContacts(db);
-  db.contact_notes = generateContactNotes(db);
-  db.deals = generateDeals(db);
-  db.deal_notes = generateDealNotes(db);
+  db.intentions = generateIntentions(db);
+  db.notes = generateNotes(db);
   db.tasks = generateTasks(db);
+  db.events = generateEvents(db);
   db.configuration = [
     {
       id: 1,

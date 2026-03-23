@@ -4,7 +4,7 @@ import { ListContextProvider } from "ra-core";
 import { useAddInfinitePagination } from "./useAddInfinitePagination";
 
 const firstPageNotes = [
-  { contact_id: 4, date: "2026-03-17T13:50:00.000Z", id: 9, sales_id: 0 },
+  { contact_id: 4, date: "2026-03-17T13:50:00.000Z", id: 9, actor_id: 0 },
 ];
 
 type HookSnapshot = {
@@ -36,7 +36,7 @@ const HookStateHarness = ({ snapshots }: { snapshots: HookSnapshot[] }) => {
     page: 1,
     perPage: 25,
     refetch: vi.fn(),
-    resource: "contact_notes",
+    resource: "notes",
     selectedIds: [],
     setFilters: vi.fn(),
     setPage: vi.fn(),

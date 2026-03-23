@@ -11,7 +11,6 @@ import { Status } from "../misc/Status";
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import { getCurrentDate } from "./utils";
 import { AttachmentField } from "./AttachmentField";
-import { foreignKeyMapping } from "./foreignKeyMapping";
 import { AutocompleteInput, ReferenceInput } from "@/components/admin";
 import { contactOptionText } from "../misc/ContactOption";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -23,16 +22,13 @@ export const NoteInputs = ({
 }: {
   showStatus?: boolean;
   selectReference?: boolean;
-  reference?: "contacts" | "deals";
+  reference?: "contacts" | "intentions";
 }) => {
   const isMobile = useIsMobile();
   const { noteStatuses } = useConfigurationContext();
   const translate = useTranslate();
   const [displayMore, setDisplayMore] = useState(false);
 
-  // We manually define the input labels because the default ones
-  // would use the resource from the context, which is either "contact_notes" or "deal_notes",
-  // but we want it to be "notes" regardless of the context
   return (
     <div className="space-y-2">
       <TextInput
@@ -46,14 +42,14 @@ export const NoteInputs = ({
 
       {selectReference && reference && (
         <ReferenceInput
-          source={foreignKeyMapping[reference]}
-          reference={reference}
+          source="target_id"
+          reference={reference === "contacts" ? "contacts" : "intentions"}
         >
           <AutocompleteInput
             label={
               reference === "contacts"
                 ? "resources.notes.fields.contact_id"
-                : "resources.notes.fields.deal_id"
+                : "resources.notes.fields.intention_id"
             }
             optionText={
               reference === "contacts" ? contactOptionText : undefined
@@ -106,7 +102,7 @@ export const NoteInputs = ({
             />
           )}
           <DateTimeInput
-            source="date"
+            source="created_at"
             label="resources.notes.fields.date"
             helperText={false}
             className="text-primary"

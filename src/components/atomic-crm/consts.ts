@@ -1,5 +1,5 @@
-export const COMPANY_CREATED = "company.created" as const;
-export const CONTACT_CREATED = "contact.created" as const;
-export const CONTACT_NOTE_CREATED = "contactNote.created" as const;
-export const DEAL_CREATED = "deal.created" as const;
-export const DEAL_NOTE_CREATED = "dealNote.created" as const;
+// Event action constants
+export const EVENT_CREATED = "created" as const;
+export const EVENT_NOTED = "noted" as const;
+export const EVENT_STATUS_CHANGED = "status_changed" as const;
+export const EVENT_JOINED = "joined" as const;

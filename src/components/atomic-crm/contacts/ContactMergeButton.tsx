@@ -101,20 +101,19 @@ const ContactMergeDialog = ({ open, onClose }: ContactMergeDialogProps) => {
     { enabled: canFetchCounts },
   );
 
-  const { total: notesCount } = useGetManyReference(
-    "contact_notes",
+  const { total: notesCount } = useGetList(
+    "notes",
     {
-      target: "contact_id",
-      id: loserContact?.id,
+      filter: { target_type: "contact", target_id: loserContact?.id },
       pagination: { page: 1, perPage: 1 },
     },
     { enabled: canFetchCounts },
   );
 
-  const { total: dealsCount } = useGetList(
-    "deals",
+  const { total: intentionsCount } = useGetList(
+    "intention_contacts",
     {
-      filter: { "contact_ids@cs": `{${loserContact?.id}}` },
+      filter: { contact_id: loserContact?.id },
       pagination: { page: 1, perPage: 1 },
     },
     { enabled: canFetchCounts },
@@ -238,10 +237,10 @@ const ContactMergeDialog = ({ open, onClose }: ContactMergeDialogProps) => {
                       {tasksCount !== 1 ? "s" : ""} will be reassigned
                     </li>
                   )}
-                  {dealsCount != null && dealsCount > 0 && (
+                  {intentionsCount != null && intentionsCount > 0 && (
                     <li>
-                      • {dealsCount} deal
-                      {dealsCount !== 1 ? "s" : ""} will be updated
+                      • {intentionsCount} intention
+                      {intentionsCount !== 1 ? "s" : ""} will be updated
                     </li>
                   )}
                   {loserContact.email_jsonb?.length > 0 && (
@@ -260,7 +259,7 @@ const ContactMergeDialog = ({ open, onClose }: ContactMergeDialogProps) => {
                   )}
                   {!notesCount &&
                     !tasksCount &&
-                    !dealsCount &&
+                    !intentionsCount &&
                     !loserContact.email_jsonb?.length &&
                     !loserContact.phone_jsonb?.length && (
                       <li className="text-muted-foreground/60">

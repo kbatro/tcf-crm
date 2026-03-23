@@ -25,14 +25,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ActivityLog } from "../activity/ActivityLog";
 import { Avatar } from "../contacts/Avatar";
 import { TagsList } from "../contacts/TagsList";
-import { findDealLabel } from "../deals/dealUtils";
+import { findIntentionLabel } from "../intentions/intentionUtils";
 import { MobileContent } from "../layout/MobileContent";
 import MobileHeader from "../layout/MobileHeader";
 import { MobileBackButton } from "../misc/MobileBackButton";
 import { formatRelativeDate } from "../misc/RelativeDate";
 import { Status } from "../misc/Status";
 import { useConfigurationContext } from "../root/ConfigurationContext";
-import type { Company, Contact, Deal } from "../types";
+import type { Company, Contact, Intention } from "../types";
 import {
   AdditionalInfo,
   AddressInfo,
@@ -129,10 +129,10 @@ const CompanyShowContent = () => {
                         smart_count: record.nb_contacts,
                       })}
                 </TabsTrigger>
-                {record.nb_deals ? (
-                  <TabsTrigger value="deals">
-                    {translate("resources.companies.nb_deals", {
-                      smart_count: record.nb_deals,
+                {record.nb_intentions ? (
+                  <TabsTrigger value="intentions">
+                    {translate("resources.companies.nb_intentions", {
+                      smart_count: record.nb_intentions,
                     })}
                   </TabsTrigger>
                 ) : null}
@@ -167,14 +167,15 @@ const CompanyShowContent = () => {
                   </div>
                 )}
               </TabsContent>
-              <TabsContent value="deals">
-                {record.nb_deals ? (
+              <TabsContent value="intentions">
+                {record.nb_intentions ? (
                   <ReferenceManyField
-                    reference="deals"
-                    target="company_id"
+                    reference="intentions"
+                    target="target_id"
                     sort={{ field: "name", order: "ASC" }}
+                    filter={{ target_type: "group" }}
                   >
-                    <DealsIterator />
+                    <IntentionsIterator />
                   </ReferenceManyField>
                 ) : null}
               </TabsContent>
@@ -258,41 +259,42 @@ const CreateRelatedContactButton = () => {
   );
 };
 
-const DealsIterator = () => {
+const IntentionsIterator = () => {
   const translate = useTranslate();
   const [locale = "en"] = useLocaleState();
-  const { data: deals, error, isPending } = useListContext<Deal>();
-  const { dealStages, dealCategories, currency } = useConfigurationContext();
+  const { data: intentions, error, isPending } = useListContext<Intention>();
+  const { intentionStatuses, intentionTypes, currency } =
+    useConfigurationContext();
   if (isPending || error) return null;
   return (
     <div>
       <div>
-        {deals.map((deal) => (
-          <div key={deal.id} className="p-0 text-sm">
+        {intentions.map((intention) => (
+          <div key={intention.id} className="p-0 text-sm">
             <RouterLink
-              to={`/deals/${deal.id}/show`}
+              to={`/intentions/${intention.id}/show`}
               className="flex items-center justify-between hover:bg-muted py-2 px-4 transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <div className="font-medium">{deal.name}</div>
+                <div className="font-medium">{intention.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  {findDealLabel(dealStages, deal.stage)},{" "}
-                  {deal.amount.toLocaleString("en-US", {
+                  {findIntentionLabel(intentionStatuses, intention.status)},{" "}
+                  {intention.amount.toLocaleString("en-US", {
                     notation: "compact",
                     style: "currency",
                     currency,
                     currencyDisplay: "narrowSymbol",
                     minimumSignificantDigits: 3,
                   })}
-                  {deal.category
-                    ? `, ${dealCategories.find((c) => c.value === deal.category)?.label ?? deal.category}`
+                  {intention.type
+                    ? `, ${intentionTypes.find((c) => c.value === intention.type)?.label ?? intention.type}`
                     : ""}
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-sm text-muted-foreground">
                   {translate("crm.common.last_activity_with_date", {
-                    date: formatRelativeDate(deal.updated_at, locale),
+                    date: formatRelativeDate(intention.updated_at, locale),
                   })}{" "}
                 </div>
               </div>

@@ -1,12 +1,12 @@
 import type { Identifier, DataProvider } from "ra-core";
 
-import type { Contact, Task, Deal, ContactNote } from "../../types";
+import type { Contact, Task, Note, IntentionContact } from "../../types";
 
 /**
  * Merge one contact (loser) into another contact (winner).
  *
  * This function copies properties from the loser to the winner contact,
- * transfers all associated data (tasks, notes, deals) from the loser to the winner,
+ * transfers all associated data (tasks, notes, intention_contacts) from the loser to the winner,
  * and deletes the loser contact.
  */
 export const mergeContacts = async (
@@ -14,7 +14,6 @@ export const mergeContacts = async (
   winnerId: Identifier,
   dataProvider: DataProvider,
 ) => {
-  // Fetch both contacts using dataProvider to get fresh data
   const { data: winnerContact } = await dataProvider.getOne<Contact>(
     "contacts",
     { id: winnerId },
@@ -49,49 +48,60 @@ export const mergeContacts = async (
       }),
     ) || [];
 
-  // 2. Reassign all notes from loser to winner
-  const { data: loserNotes } = await dataProvider.getManyReference<ContactNote>(
-    "contact_notes",
-    {
-      target: "contact_id",
-      id: loserId,
-      pagination: { page: 1, perPage: 1000 },
-      sort: { field: "id", order: "ASC" },
-      filter: {},
-    },
-  );
-
-  const noteUpdates =
-    loserNotes?.map((note) =>
-      dataProvider.update<ContactNote>("contact_notes", {
-        id: note.id,
-        data: { contact_id: winnerId },
-        previousData: note,
-      }),
-    ) || [];
-
-  // 3. Change contact in deals - replace loser ID with winner ID in contact_ids array
-  const { data: loserDeals } = await dataProvider.getList<Deal>("deals", {
-    filter: { "contact_ids@cs": `{${loserId}}` },
+  // 2. Reassign notes (target_type='contact') from loser to winner
+  const { data: loserNotes } = await dataProvider.getList<Note>("notes", {
+    filter: { target_type: "contact", target_id: loserId },
     pagination: { page: 1, perPage: 1000 },
     sort: { field: "id", order: "ASC" },
   });
 
-  const dealUpdates =
-    loserDeals?.map((deal) => {
-      const newContactIds = deal.contact_ids
-        .filter((id) => id !== loserId)
-        .concat(winnerId)
-        .filter(
-          (id: Identifier, index: number, self: Identifier[]) =>
-            self.indexOf(id) === index,
-        ); // Remove duplicates
+  const noteUpdates =
+    loserNotes?.map((note) =>
+      dataProvider.update<Note>("notes", {
+        id: note.id,
+        data: { target_id: winnerId },
+        previousData: note,
+      }),
+    ) || [];
 
-      return dataProvider.update<Deal>("deals", {
-        id: deal.id,
-        data: { contact_ids: newContactIds },
-        previousData: deal,
-      });
+  // 3. Update intention_contacts - replace loser with winner
+  const { data: loserIntentionContacts } =
+    await dataProvider.getList<IntentionContact>("intention_contacts", {
+      filter: { contact_id: loserId },
+      pagination: { page: 1, perPage: 1000 },
+      sort: { field: "id", order: "ASC" },
+    });
+
+  const { data: winnerIntentionContacts } =
+    await dataProvider.getList<IntentionContact>("intention_contacts", {
+      filter: { contact_id: winnerId },
+      pagination: { page: 1, perPage: 1000 },
+      sort: { field: "id", order: "ASC" },
+    });
+
+  const winnerIntentionIds = new Set(
+    winnerIntentionContacts?.map((ic) => ic.intention_id) || [],
+  );
+
+  const intentionContactUpdates =
+    loserIntentionContacts?.flatMap((ic) => {
+      if (winnerIntentionIds.has(ic.intention_id)) {
+        // Duplicate - delete the loser's entry
+        return [
+          dataProvider.delete("intention_contacts", {
+            id: ic.id,
+            previousData: ic,
+          }),
+        ];
+      }
+      // Move to winner
+      return [
+        dataProvider.update("intention_contacts", {
+          id: ic.id,
+          data: { contact_id: winnerId },
+          previousData: ic,
+        }),
+      ];
     }) || [];
 
   // 4. Update winner contact with loser data
@@ -119,6 +129,7 @@ export const mergeContacts = async (
       last_name: winnerContact.last_name ?? loserContact.last_name,
       title: winnerContact.title ?? loserContact.title,
       company_id: winnerContact.company_id ?? loserContact.company_id,
+      company_name: winnerContact.company_name ?? loserContact.company_name,
       email_jsonb: mergedEmails,
       phone_jsonb: mergedPhones,
       linkedin_url: winnerContact.linkedin_url || loserContact.linkedin_url,
@@ -130,7 +141,7 @@ export const mergeContacts = async (
         winnerContact.last_seen > loserContact.last_seen
           ? winnerContact.last_seen
           : loserContact.last_seen,
-      sales_id: winnerContact.sales_id ?? loserContact.sales_id,
+      actor_id: winnerContact.actor_id ?? loserContact.actor_id,
       tags: mergeArraysUnique(
         winnerContact.tags || [],
         loserContact.tags || [],
@@ -139,11 +150,10 @@ export const mergeContacts = async (
     previousData: winnerContact,
   });
 
-  // Execute all updates
   await Promise.all([
     ...taskUpdates,
     ...noteUpdates,
-    ...dealUpdates,
+    ...intentionContactUpdates,
     winnerUpdate,
   ]);
 
@@ -154,14 +164,10 @@ export const mergeContacts = async (
   });
 };
 
-// Helper functions to merge arrays and remove duplicates
-
-// For primitive arrays like tags
 const mergeArraysUnique = <T>(arr1: T[], arr2: T[]): T[] => [
   ...new Set([...arr1, ...arr2]),
 ];
 
-// For object arrays like emails and phones
 function mergeObjectArraysUnique<T>(
   arr1: T[],
   arr2: T[],

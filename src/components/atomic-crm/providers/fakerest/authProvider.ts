@@ -1,6 +1,6 @@
 import type { AuthProvider } from "ra-core";
 
-import type { Sale } from "../../types";
+import type { Actor } from "../../types";
 import { canAccess } from "../commons/canAccess";
 import { dataProvider } from "./dataProvider";
 
@@ -21,16 +21,16 @@ export const USER_STORAGE_KEY = "user";
 localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({ ...DEFAULT_USER }));
 
 async function getUser(email: string) {
-  const sales = await dataProvider.getList("sales", {
+  const actors = await dataProvider.getList("actors", {
     pagination: { page: 1, perPage: 200 },
     sort: { field: "name", order: "ASC" },
   });
 
-  if (!sales.data.length) {
+  if (!actors.data.length) {
     return { ...DEFAULT_USER };
   }
 
-  const user = sales.data.find((sale) => sale.email === email);
+  const user = actors.data.find((actor) => actor.email === email);
   if (!user || user.disabled) {
     return { ...DEFAULT_USER };
   }
@@ -65,16 +65,16 @@ export const authProvider: AuthProvider = {
   canAccess: async ({ signal: _signal, ...params }) => {
     // Get the current user
     const userItem = localStorage.getItem(USER_STORAGE_KEY);
-    const localUser = userItem ? (JSON.parse(userItem) as Sale) : null;
+    const localUser = userItem ? (JSON.parse(userItem) as Actor) : null;
     if (!localUser) return false;
 
-    // Compute access rights from the sale role
+    // Compute access rights from the actor role
     const role = localUser.administrator ? "admin" : "user";
     return canAccess(role, params);
   },
   getIdentity: () => {
     const userItem = localStorage.getItem(USER_STORAGE_KEY);
-    const user = userItem ? (JSON.parse(userItem) as Sale) : null;
+    const user = userItem ? (JSON.parse(userItem) as Actor) : null;
     return Promise.resolve({
       id: user?.id ?? 0,
       fullName: user ? `${user.first_name} ${user.last_name}` : "Jane Doe",

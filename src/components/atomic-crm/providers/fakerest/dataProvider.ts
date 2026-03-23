@@ -11,16 +11,14 @@ import fakeRestDataProvider from "ra-data-fakerest";
 import type {
   Company,
   Contact,
-  ContactNote,
-  Deal,
-  DealNote,
-  Sale,
-  SalesFormData,
+  Note,
+  Intention,
+  Actor,
+  ActorFormData,
   SignUpData,
   Task,
 } from "../../types";
 import type { ConfigurationContextValue } from "../../root/ConfigurationContext";
-import { getActivityLog } from "../commons/activity";
 import { getCompanyAvatar } from "../commons/getCompanyAvatar";
 import { getContactAvatar } from "../commons/getContactAvatar";
 import { mergeContacts } from "../commons/mergeContacts";
@@ -37,7 +35,7 @@ const TASK_MARKED_AS_DONE = "TASK_MARKED_AS_DONE";
 const TASK_MARKED_AS_UNDONE = "TASK_MARKED_AS_UNDONE";
 const TASK_DONE_NOT_CHANGED = "TASK_DONE_NOT_CHANGED";
 
-const processCompanyLogo = async (params: any) => {
+const processGroupLogo = async (params: any) => {
   let logo = params.data.logo;
 
   if (typeof logo !== "object" || logo === null || !logo.src) {
@@ -73,7 +71,6 @@ async function processContactAvatar(
   }
   const avatarUrl = await getContactAvatar(data);
 
-  // Clone the data and modify the clone
   const newData = { ...data, avatar: { src: avatarUrl || undefined } };
 
   return { ...params, data: newData };
@@ -168,40 +165,32 @@ export const createDataProvider = ({
   const dataProviderWithCustomMethod: CrmDataProvider = {
     ...baseDataProvider,
     async getList(resource: string, params: any) {
-      if (resource === "activity_log") {
-        const { filter = {}, pagination } = params;
-        const all = await getActivityLog(
-          withSupabaseFilterAdapter(baseDataProvider),
-          filter.company_id,
-          filter.sales_id,
-        );
-        const { page, perPage } = pagination;
-        const start = (page - 1) * perPage;
-        return { data: all.slice(start, start + perPage), total: all.length };
-      }
       return baseDataProvider.getList(resource, params);
     },
-    unarchiveDeal: async (deal: Deal) => {
-      // get all deals where stage is the same as the deal to unarchive
-      const { data: deals } = await baseDataProvider.getList<Deal>("deals", {
-        filter: { stage: deal.stage },
-        pagination: { page: 1, perPage: 1000 },
-        sort: { field: "index", order: "ASC" },
-      });
+    unarchiveIntention: async (intention: Intention) => {
+      const { data: intentions } = await baseDataProvider.getList<Intention>(
+        "intentions",
+        {
+          filter: { status: intention.status },
+          pagination: { page: 1, perPage: 1000 },
+          sort: { field: "index", order: "ASC" },
+        },
+      );
 
-      // set index for each deal starting from 1, if the deal to unarchive is found, set its index to the last one
-      const updatedDeals = deals.map((d, index) => ({
-        ...d,
-        index: d.id === deal.id ? 0 : index + 1,
-        archived_at: d.id === deal.id ? null : d.archived_at,
+      const updatedIntentions = intentions.map((i, index) => ({
+        ...i,
+        index: i.id === intention.id ? 0 : index + 1,
+        archived_at: i.id === intention.id ? null : i.archived_at,
       }));
 
       return await Promise.all(
-        updatedDeals.map((updatedDeal) =>
-          dataProvider.update("deals", {
-            id: updatedDeal.id,
-            data: updatedDeal,
-            previousData: deals.find((d) => d.id === updatedDeal.id),
+        updatedIntentions.map((updatedIntention) =>
+          dataProvider.update("intentions", {
+            id: updatedIntention.id,
+            data: updatedIntention,
+            previousData: intentions.find(
+              (i) => i.id === updatedIntention.id,
+            ),
           }),
         ),
       );
@@ -216,7 +205,7 @@ export const createDataProvider = ({
       email: string;
       password: string;
     }> => {
-      const user = await baseDataProvider.create("sales", {
+      const user = await baseDataProvider.create("actors", {
         data: {
           email,
           first_name,
@@ -229,8 +218,8 @@ export const createDataProvider = ({
         password,
       };
     },
-    salesCreate: async ({ ...data }: SalesFormData): Promise<Sale> => {
-      const response = await dataProvider.create("sales", {
+    actorsCreate: async ({ ...data }: ActorFormData): Promise<Actor> => {
+      const response = await dataProvider.create("actors", {
         data: {
           ...data,
           password: "new_password",
@@ -239,11 +228,11 @@ export const createDataProvider = ({
 
       return response.data;
     },
-    salesUpdate: async (
+    actorsUpdate: async (
       id: Identifier,
-      data: Partial<Omit<SalesFormData, "password">>,
-    ): Promise<Sale> => {
-      const { data: previousData } = await dataProvider.getOne<Sale>("sales", {
+      data: Partial<Omit<ActorFormData, "password">>,
+    ): Promise<Actor> => {
+      const { data: previousData } = await dataProvider.getOne<Actor>("actors", {
         id,
       });
 
@@ -251,20 +240,20 @@ export const createDataProvider = ({
         throw new Error("User not found");
       }
 
-      const { data: sale } = await dataProvider.update<Sale>("sales", {
+      const { data: actor } = await dataProvider.update<Actor>("actors", {
         id,
         data,
         previousData,
       });
-      return { ...sale, user_id: sale.id.toString() };
+      return { ...actor, user_id: actor.id.toString() };
     },
     isInitialized: async (): Promise<boolean> => {
-      const sales = await dataProvider.getList<Sale>("sales", {
+      const actors = await dataProvider.getList<Actor>("actors", {
         filter: {},
         pagination: { page: 1, perPage: 1 },
         sort: { field: "id", order: "ASC" },
       });
-      if (sales.data.length === 0) {
+      if (actors.data.length === 0) {
         return false;
       }
       return true;
@@ -274,7 +263,7 @@ export const createDataProvider = ({
       if (!currentUser) {
         throw new Error("User not found");
       }
-      const { data: previousData } = await dataProvider.getOne<Sale>("sales", {
+      const { data: previousData } = await dataProvider.getOne<Actor>("actors", {
         id: currentUser.id,
       });
 
@@ -282,7 +271,7 @@ export const createDataProvider = ({
         throw new Error("User not found");
       }
 
-      await dataProvider.update("sales", {
+      await dataProvider.update("actors", {
         id,
         data: {
           password: "demo_newPassword",
@@ -333,18 +322,15 @@ export const createDataProvider = ({
         },
       },
       {
-        resource: "sales",
+        resource: "actors",
         beforeCreate: async (params) => {
           const { data } = params;
-          // If administrator role is not set, we simply set it to false
           if (data.administrator == null) {
             data.administrator = false;
           }
           return params;
         },
         afterSave: async (data) => {
-          // Since the current user is stored in localStorage in fakerest authProvider
-          // we need to update it to keep information up to date in the UI
           const currentUser = await getIdentity();
           if (currentUser?.id === data.id) {
             localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data));
@@ -358,9 +344,9 @@ export const createDataProvider = ({
 
           const newSaleId = params.meta.identity.id as Identifier;
 
-          const [companies, contacts, contactNotes, deals] = await Promise.all([
+          const [companies, contacts, notes, intentions] = await Promise.all([
             dataProvider.getList("companies", {
-              filter: { sales_id: params.id },
+              filter: { actor_id: params.id },
               pagination: {
                 page: 1,
                 perPage: 10_000,
@@ -368,23 +354,23 @@ export const createDataProvider = ({
               sort: { field: "id", order: "ASC" },
             }),
             dataProvider.getList("contacts", {
-              filter: { sales_id: params.id },
+              filter: { actor_id: params.id },
               pagination: {
                 page: 1,
                 perPage: 10_000,
               },
               sort: { field: "id", order: "ASC" },
             }),
-            dataProvider.getList("contact_notes", {
-              filter: { sales_id: params.id },
+            dataProvider.getList("notes", {
+              filter: { actor_id: params.id },
               pagination: {
                 page: 1,
                 perPage: 10_000,
               },
               sort: { field: "id", order: "ASC" },
             }),
-            dataProvider.getList("deals", {
-              filter: { sales_id: params.id },
+            dataProvider.getList("intentions", {
+              filter: { actor_id: params.id },
               pagination: {
                 page: 1,
                 perPage: 10_000,
@@ -397,32 +383,32 @@ export const createDataProvider = ({
             dataProvider.updateMany("companies", {
               ids: companies.data.map((company) => company.id),
               data: {
-                sales_id: newSaleId,
+                actor_id: newSaleId,
               },
             }),
             dataProvider.updateMany("contacts", {
-              ids: contacts.data.map((company) => company.id),
+              ids: contacts.data.map((contact) => contact.id),
               data: {
-                sales_id: newSaleId,
+                actor_id: newSaleId,
               },
             }),
-            dataProvider.updateMany("contact_notes", {
-              ids: contactNotes.data.map((company) => company.id),
+            dataProvider.updateMany("notes", {
+              ids: notes.data.map((note) => note.id),
               data: {
-                sales_id: newSaleId,
+                actor_id: newSaleId,
               },
             }),
-            dataProvider.updateMany("deals", {
-              ids: deals.data.map((company) => company.id),
+            dataProvider.updateMany("intentions", {
+              ids: intentions.data.map((intention) => intention.id),
               data: {
-                sales_id: newSaleId,
+                actor_id: newSaleId,
               },
             }),
           ]);
 
           return params;
         },
-      } satisfies ResourceCallbacks<Sale>,
+      } satisfies ResourceCallbacks<Actor>,
       {
         resource: "contacts",
         beforeCreate: async (createParams, dataProvider) => {
@@ -440,8 +426,9 @@ export const createDataProvider = ({
           return fetchAndUpdateCompanyData(newParams, dataProvider);
         },
         afterCreate: async (result) => {
-          if (result.data.company_id != null) {
-            await updateCompany(result.data.company_id, (company) => ({
+          const companyId = result.data.company_id;
+          if (companyId != null) {
+            await updateCompany(companyId, (company) => ({
               nb_contacts: (company.nb_contacts ?? 0) + 1,
             }));
           }
@@ -453,8 +440,9 @@ export const createDataProvider = ({
           return fetchAndUpdateCompanyData(newParams, dataProvider);
         },
         afterDelete: async (result) => {
-          if (result.data.company_id != null) {
-            await updateCompany(result.data.company_id, (company) => ({
+          const companyId = result.data.company_id;
+          if (companyId != null) {
+            await updateCompany(companyId, (company) => ({
               nb_contacts: (company.nb_contacts ?? 1) - 1,
             }));
           }
@@ -465,7 +453,6 @@ export const createDataProvider = ({
       {
         resource: "tasks",
         afterCreate: async (result, dataProvider) => {
-          // update the task count in the related contact
           const { contact_id } = result.data;
           const { data: contact } = await dataProvider.getOne("contacts", {
             id: contact_id,
@@ -491,7 +478,6 @@ export const createDataProvider = ({
           return params;
         },
         afterUpdate: async (result, dataProvider) => {
-          // update the contact: if the task is done, decrement the nb tasks, otherwise increment it
           const { contact_id } = result.data;
           const { data: contact } = await dataProvider.getOne("contacts", {
             id: contact_id,
@@ -511,7 +497,6 @@ export const createDataProvider = ({
           return result;
         },
         afterDelete: async (result, dataProvider) => {
-          // update the task count in the related contact
           const { contact_id } = result.data;
           const { data: contact } = await dataProvider.getOne("contacts", {
             id: contact_id,
@@ -529,7 +514,7 @@ export const createDataProvider = ({
       {
         resource: "companies",
         beforeCreate: async (params) => {
-          const createParams = await processCompanyLogo(params);
+          const createParams = await processGroupLogo(params);
 
           return {
             ...createParams,
@@ -540,10 +525,9 @@ export const createDataProvider = ({
           };
         },
         beforeUpdate: async (params) => {
-          return await processCompanyLogo(params);
+          return await processGroupLogo(params);
         },
         afterUpdate: async (result, dataProvider) => {
-          // get all contacts of the company and for each contact, update the company_name
           const { id, name } = result.data;
           const { data: contacts } = await dataProvider.getList("contacts", {
             filter: { company_id: id },
@@ -560,7 +544,7 @@ export const createDataProvider = ({
         },
       } satisfies ResourceCallbacks<Company>,
       {
-        resource: "deals",
+        resource: "intentions",
         beforeCreate: async (params) => {
           return {
             ...params,
@@ -572,9 +556,11 @@ export const createDataProvider = ({
           };
         },
         afterCreate: async (result) => {
-          await updateCompany(result.data.company_id, (company) => ({
-            nb_deals: (company.nb_deals ?? 0) + 1,
-          }));
+          if (result.data.target_type === "group" && result.data.target_id) {
+            await updateCompany(result.data.target_id, (company) => ({
+              nb_intentions: (company.nb_intentions ?? 0) + 1,
+            }));
+          }
 
           return result;
         },
@@ -588,21 +574,19 @@ export const createDataProvider = ({
           };
         },
         afterDelete: async (result) => {
-          await updateCompany(result.data.company_id, (company) => ({
-            nb_deals: (company.nb_deals ?? 1) - 1,
-          }));
+          if (result.data.target_type === "group" && result.data.target_id) {
+            await updateCompany(result.data.target_id, (company) => ({
+              nb_intentions: (company.nb_intentions ?? 1) - 1,
+            }));
+          }
 
           return result;
         },
-      } satisfies ResourceCallbacks<Deal>,
+      } satisfies ResourceCallbacks<Intention>,
       {
-        resource: "contact_notes",
+        resource: "notes",
         beforeSave: async (params) => preserveAttachmentMimeType(params),
-      } satisfies ResourceCallbacks<ContactNote>,
-      {
-        resource: "deal_notes",
-        beforeSave: async (params) => preserveAttachmentMimeType(params),
-      } satisfies ResourceCallbacks<DealNote>,
+      } satisfies ResourceCallbacks<Note>,
     ],
   ) as CrmDataProvider;
 
@@ -611,15 +595,9 @@ export const createDataProvider = ({
 
 export const dataProvider = createDataProvider();
 
-/**
- * Convert a `File` object returned by the upload input into a base 64 string.
- * That's not the most optimized way to store images in production, but it's
- * enough to illustrate the idea of dataprovider decoration.
- */
 const convertFileToBase64 = (file: { rawFile: Blob }): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-    // We know result is a string as we used readAsDataURL
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
     reader.readAsDataURL(file.rawFile);

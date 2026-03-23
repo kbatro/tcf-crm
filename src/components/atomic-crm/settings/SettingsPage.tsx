@@ -39,7 +39,7 @@ const SECTIONS = [
     label: "resources.companies.name",
     fallback: "Companies",
   },
-  { id: "deals", label: "resources.deals.name", fallback: "Deals" },
+  { id: "intentions", label: "resources.intentions.name", fallback: "Intentions" },
   { id: "notes", label: "resources.notes.name", fallback: "Notes" },
   { id: "tasks", label: "resources.tasks.name", fallback: "Tasks" },
 ];
@@ -123,10 +123,10 @@ const transformFormValues = (data: Record<string, any>) => ({
     darkModeLogo: data.darkModeLogo,
     currency: data.currency,
     companySectors: ensureValues(data.companySectors),
-    dealCategories: ensureValues(data.dealCategories),
+    intentionTypes: ensureValues(data.intentionTypes),
     taskTypes: ensureValues(data.taskTypes),
-    dealStages: ensureValues(data.dealStages),
-    dealPipelineStatuses: data.dealPipelineStatuses,
+    intentionStatuses: ensureValues(data.intentionStatuses),
+    intentionSuccessStatuses: data.intentionSuccessStatuses,
     noteStatuses: ensureValues(data.noteStatuses),
   } as ConfigurationContextValue,
 });
@@ -171,10 +171,10 @@ const SettingsForm = () => {
       darkModeLogo: { src: config.darkModeLogo },
       currency: config.currency,
       companySectors: config.companySectors,
-      dealCategories: config.dealCategories,
+      intentionTypes: config.intentionTypes,
       taskTypes: config.taskTypes,
-      dealStages: config.dealStages,
-      dealPipelineStatuses: config.dealPipelineStatuses,
+      intentionStatuses: config.intentionStatuses,
+      intentionSuccessStatuses: config.intentionSuccessStatuses,
       noteStatuses: config.noteStatuses,
     }),
     [config],
@@ -197,20 +197,21 @@ const SettingsFormFields = () => {
     formState: { isSubmitting },
   } = useFormContext();
 
-  const dealStages = watch("dealStages");
-  const dealPipelineStatuses: string[] = watch("dealPipelineStatuses") ?? [];
-  const stageDisplayName = translate("crm.settings.validation.entities.stages");
-  const categoryDisplayName = translate(
-    "crm.settings.validation.entities.categories",
+  const intentionStatuses = watch("intentionStatuses");
+  const intentionSuccessStatuses: string[] =
+    watch("intentionSuccessStatuses") ?? [];
+  const statusDisplayName = translate(
+    "crm.settings.validation.entities.statuses",
   );
+  const typeDisplayName = translate("crm.settings.validation.entities.types");
 
-  const { data: deals } = useGetList("deals", {
+  const { data: intentions } = useGetList("intentions", {
     pagination: { page: 1, perPage: 1000 },
   });
 
-  const validateDealStages = useCallback(
-    (stages: { value: string; label: string }[] | undefined) =>
-      validateItemsInUse(stages, deals, "stage", stageDisplayName, {
+  const validateIntentionStatuses = useCallback(
+    (statuses: { value: string; label: string }[] | undefined) =>
+      validateItemsInUse(statuses, intentions, "status", statusDisplayName, {
         duplicate: (displayName, duplicates) =>
           translate("crm.settings.validation.duplicate", {
             display_name: displayName,
@@ -223,12 +224,12 @@ const SettingsFormFields = () => {
           }),
         validating: translate("crm.settings.validation.validating"),
       }),
-    [deals, stageDisplayName, translate],
+    [intentions, statusDisplayName, translate],
   );
 
-  const validateDealCategories = useCallback(
-    (categories: { value: string; label: string }[] | undefined) =>
-      validateItemsInUse(categories, deals, "category", categoryDisplayName, {
+  const validateIntentionTypes = useCallback(
+    (types: { value: string; label: string }[] | undefined) =>
+      validateItemsInUse(types, intentions, "type", typeDisplayName, {
         duplicate: (displayName, duplicates) =>
           translate("crm.settings.validation.duplicate", {
             display_name: displayName,
@@ -241,7 +242,7 @@ const SettingsFormFields = () => {
           }),
         validating: translate("crm.settings.validation.validating"),
       }),
-    [categoryDisplayName, deals, translate],
+    [typeDisplayName, intentions, translate],
   );
 
   return (
@@ -330,16 +331,16 @@ const SettingsFormFields = () => {
           </CardContent>
         </Card>
 
-        {/* Deals */}
-        <Card id="deals">
+        {/* Intentions */}
+        <Card id="intentions">
           <CardContent className="space-y-4">
             <h2 className="text-xl font-semibold text-muted-foreground">
-              {translate("resources.deals.name", {
+              {translate("resources.intentions.name", {
                 smart_count: 2,
               })}
             </h2>
             <h3 className="text-lg font-medium text-muted-foreground">
-              {translate("crm.settings.deals.currency")}
+              {translate("crm.settings.intentions.currency")}
             </h3>
             <AutocompleteInput
               source="currency"
@@ -352,13 +353,13 @@ const SettingsFormFields = () => {
             <Separator />
 
             <h3 className="text-lg font-medium text-muted-foreground">
-              {translate("crm.settings.deals.stages")}
+              {translate("crm.settings.intentions.statuses")}
             </h3>
             <ArrayInput
-              source="dealStages"
+              source="intentionStatuses"
               label={false}
               helperText={false}
-              validate={validateDealStages}
+              validate={validateIntentionStatuses}
             >
               <SimpleFormIterator disableClear>
                 <TextInput source="label" label={false} />
@@ -368,15 +369,20 @@ const SettingsFormFields = () => {
             <Separator />
 
             <h3 className="text-lg font-medium text-muted-foreground">
-              {translate("crm.settings.deals.pipeline_statuses")}
+              {translate("crm.settings.intentions.success_statuses")}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {translate("crm.settings.deals.pipeline_help")}
+              {translate("crm.settings.intentions.success_help")}
             </p>
             <div className="flex flex-wrap gap-2">
-              {dealStages?.map(
-                (stage: { value: string; label: string }, idx: number) => {
-                  const isSelected = dealPipelineStatuses.includes(stage.value);
+              {intentionStatuses?.map(
+                (
+                  status: { value: string; label: string },
+                  idx: number,
+                ) => {
+                  const isSelected = intentionSuccessStatuses.includes(
+                    status.value,
+                  );
                   return (
                     <Button
                       key={idx}
@@ -386,20 +392,20 @@ const SettingsFormFields = () => {
                       onClick={() => {
                         if (isSelected) {
                           setValue(
-                            "dealPipelineStatuses",
-                            dealPipelineStatuses.filter(
-                              (s) => s !== stage.value,
+                            "intentionSuccessStatuses",
+                            intentionSuccessStatuses.filter(
+                              (s) => s !== status.value,
                             ),
                           );
                         } else {
-                          setValue("dealPipelineStatuses", [
-                            ...dealPipelineStatuses,
-                            stage.value,
+                          setValue("intentionSuccessStatuses", [
+                            ...intentionSuccessStatuses,
+                            status.value,
                           ]);
                         }
                       }}
                     >
-                      {stage.label || stage.value}
+                      {status.label || status.value}
                     </Button>
                   );
                 },
@@ -409,13 +415,13 @@ const SettingsFormFields = () => {
             <Separator />
 
             <h3 className="text-lg font-medium text-muted-foreground">
-              {translate("crm.settings.deals.categories")}
+              {translate("crm.settings.intentions.types")}
             </h3>
             <ArrayInput
-              source="dealCategories"
+              source="intentionTypes"
               label={false}
               helperText={false}
-              validate={validateDealCategories}
+              validate={validateIntentionTypes}
             >
               <SimpleFormIterator disableReordering disableClear>
                 <TextInput source="label" label={false} />

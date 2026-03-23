@@ -17,14 +17,13 @@ import { cn } from "@/lib/utils";
 
 import { NoteInputs } from "./NoteInputs";
 import { getCurrentDate } from "./utils";
-import { foreignKeyMapping } from "./foreignKeyMapping";
 
 export const NoteCreate = ({
   reference,
   showStatus,
   className,
 }: {
-  reference: "contacts" | "deals";
+  reference: "contacts" | "intentions";
   showStatus?: boolean;
   className?: string;
 }) => {
@@ -50,7 +49,7 @@ const NoteCreateButton = ({
   reference,
   record,
 }: {
-  reference: "contacts" | "deals";
+  reference: "contacts" | "intentions";
   record: RaRecord<Identifier>;
 }) => {
   const [update] = useUpdate();
@@ -63,12 +62,12 @@ const NoteCreateButton = ({
   if (!record || !identity) return null;
 
   const resetValues: {
-    date: string;
+    created_at: string;
     text: null;
     attachments: null;
     status?: string;
   } = {
-    date: getCurrentDate(),
+    created_at: getCurrentDate(),
     text: null,
     attachments: null,
   };
@@ -80,21 +79,24 @@ const NoteCreateButton = ({
   const handleSuccess = (data: any) => {
     reset(resetValues, { keepValues: false });
     refetch();
-    update(reference, {
-      id: (record && record.id) as unknown as Identifier,
-      data: {
-        last_seen:
-          reference === "contacts" ? new Date().toISOString() : undefined,
-        status: data.status,
-      },
-      previousData: record,
-    });
+    if (reference === "contacts") {
+      update(reference, {
+        id: (record && record.id) as unknown as Identifier,
+        data: {
+          last_seen: new Date().toISOString(),
+          status: data.status,
+        },
+        previousData: record,
+      });
+    }
     notify("resources.notes.added", {
       messageArgs: {
         _: "Note added",
       },
     });
   };
+
+  const targetType = reference === "contacts" ? "contact" : "intention";
 
   return (
     <div className="flex justify-end">
@@ -103,9 +105,12 @@ const NoteCreateButton = ({
         label={translate("resources.notes.action.add_this")}
         transform={(data) => ({
           ...data,
-          [foreignKeyMapping[reference]]: record.id,
-          sales_id: identity.id,
-          date: new Date(data.date || getCurrentDate()).toISOString(),
+          target_type: targetType,
+          target_id: record.id,
+          actor_id: identity.id,
+          created_at: new Date(
+            data.created_at || getCurrentDate(),
+          ).toISOString(),
         })}
         mutationOptions={{
           onSuccess: handleSuccess,

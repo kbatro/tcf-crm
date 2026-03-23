@@ -15,7 +15,7 @@ import { useConfigurationContext } from "../root/ConfigurationContext";
 import { contactGender } from "../contacts/contactGender";
 
 export type ImportFromJsonStats = {
-  sales: number;
+  actors: number;
   companies: number;
   contacts: number;
   notes: number;
@@ -23,7 +23,7 @@ export type ImportFromJsonStats = {
 };
 
 export type ImportFromJsonFailures = {
-  sales: Array<JsonTypes.JsonPrimitive | JsonTypes.JsonStruct | undefined>;
+  actors: Array<JsonTypes.JsonPrimitive | JsonTypes.JsonStruct | undefined>;
   companies: Array<JsonTypes.JsonPrimitive | JsonTypes.JsonStruct | undefined>;
   contacts: Array<JsonTypes.JsonPrimitive | JsonTypes.JsonStruct | undefined>;
   notes: Array<JsonTypes.JsonPrimitive | JsonTypes.JsonStruct | undefined>;
@@ -70,7 +70,7 @@ export type ImportFromJsonFunction = (file: File) => Promise<void>;
 type ResetFunction = () => void;
 
 const defaultFailedImports = {
-  sales: [],
+  actors: [],
   companies: [],
   contacts: [],
   notes: [],
@@ -78,7 +78,7 @@ const defaultFailedImports = {
 };
 
 const defaultStats = {
-  sales: 0,
+  actors: 0,
   companies: 0,
   contacts: 0,
   notes: 0,
@@ -94,7 +94,7 @@ export const useImportFromJson = (): [
   ImportFromJsonFunction,
   ResetFunction,
 ] => {
-  const { data: currentSale } = useGetIdentity();
+  const { data: currentActor } = useGetIdentity();
   const dataProvider = useDataProvider<CrmDataProvider>();
   const refresh = useRefresh();
   const { companySectors } = useConfigurationContext();
@@ -115,7 +115,7 @@ export const useImportFromJson = (): [
   });
 
   const importFile = useEvent(async (file: File) => {
-    if (currentSale == null) {
+    if (currentActor == null) {
       throw new Error("Importing data requires to be authenticated");
     }
     const startedAt = new Date();
@@ -128,35 +128,35 @@ export const useImportFromJson = (): [
     });
 
     const idsMaps: {
-      sales: Record<number, Identifier>;
+      actors: Record<number, Identifier>;
       companies: Record<number, Identifier>;
       contacts: Record<number, Identifier>;
       tags: Record<string, Identifier>;
     } = {
-      sales: {},
+      actors: {},
       companies: {},
       contacts: {},
       tags: {},
     };
 
-    const importSale = async (
+    const importActor = async (
       dataToImport: JsonTypes.JsonPrimitive | JsonTypes.JsonStruct | undefined,
     ) => {
       try {
-        if (!isSale(dataToImport)) {
-          throw new Error(`Error while importing sale: Invalid data`);
+        if (!isActor(dataToImport)) {
+          throw new Error(`Error while importing actor: Invalid data`);
         }
-        const existingRecordResponse = await dataProvider.getList("sales", {
+        const existingRecordResponse = await dataProvider.getList("actors", {
           filter: { email: dataToImport.email.trim() },
           pagination: { page: 1, perPage: 1 },
           sort: { field: "id", order: "ASC" },
         });
         if (existingRecordResponse.total === 1) {
-          idsMaps.sales[dataToImport.id] = existingRecordResponse.data[0].id;
+          idsMaps.actors[dataToImport.id] = existingRecordResponse.data[0].id;
           return existingRecordResponse.data[0].id;
         }
 
-        const data = await dataProvider.salesCreate({
+        const data = await dataProvider.actorsCreate({
           email: dataToImport.email.trim(),
           first_name: dataToImport.first_name.trim(),
           last_name: dataToImport.last_name.trim(),
@@ -164,14 +164,14 @@ export const useImportFromJson = (): [
           disabled: false,
         });
 
-        idsMaps.sales[dataToImport.id] = data.id;
+        idsMaps.actors[dataToImport.id] = data.id;
         setState((old) => {
           if (old.status === "error") {
             return {
               ...old,
               stats: {
                 ...(old.stats ?? defaultStats),
-                sales: (old.stats ?? defaultStats).sales + 1,
+                actors: (old.stats ?? defaultStats).actors + 1,
               },
             };
           }
@@ -180,7 +180,7 @@ export const useImportFromJson = (): [
             status: "importing",
             stats: {
               ...(old.stats ?? defaultStats),
-              sales: (old.stats ?? defaultStats).sales + 1,
+              actors: (old.stats ?? defaultStats).actors + 1,
             },
             error: null,
           };
@@ -192,12 +192,12 @@ export const useImportFromJson = (): [
           ...old,
           status: "error",
           error: new Error(
-            `Error while importing sale: ${(err as Error).message}`,
+            `Error while importing actor: ${(err as Error).message}`,
           ),
           failedImports: {
             ...old.failedImports,
-            sales: [
-              ...old.failedImports.sales,
+            actors: [
+              ...old.failedImports.actors,
               { ...(dataToImport as any), error: (err as Error).message },
             ],
           },
@@ -267,9 +267,9 @@ export const useImportFromJson = (): [
             context_links: Array.isArray(dataToImport.context_links)
               ? dataToImport.context_links
               : undefined,
-            sales_id: dataToImport.sales_id
-              ? idsMaps.sales[dataToImport.sales_id]
-              : currentSale.id,
+            actor_id: dataToImport.actor_id
+              ? idsMaps.actors[dataToImport.actor_id]
+              : currentActor.id,
             created_at: dataToImport.created_at,
           },
         });
@@ -380,9 +380,9 @@ export const useImportFromJson = (): [
             phone_jsonb: Array.isArray(dataToImport.phones)
               ? dataToImport.phones
               : undefined,
-            sales_id: dataToImport.sales_id
-              ? idsMaps.sales[dataToImport.sales_id]
-              : currentSale.id,
+            actor_id: dataToImport.actor_id
+              ? idsMaps.actors[dataToImport.actor_id]
+              : currentActor.id,
             tags: tagsIds,
             first_seen: dataToImport.created_at,
             last_seen: dataToImport.updated_at,
@@ -435,9 +435,9 @@ export const useImportFromJson = (): [
         return;
       }
       try {
-        if (idsMaps.sales[dataToImport.sales_id] == null) {
+        if (idsMaps.actors[dataToImport.actor_id] == null) {
           console.error(
-            `note ${dataToImport.text} has an invalid sales ID: ${dataToImport.sales_id}. Fallback to default sale`,
+            `note ${dataToImport.text} has an invalid actor ID: ${dataToImport.actor_id}. Fallback to default actor`,
           );
         }
         if (idsMaps.contacts[dataToImport.contact_id] == null) {
@@ -477,12 +477,13 @@ export const useImportFromJson = (): [
           }
         }
 
-        await dataProvider.create("contact_notes", {
+        await dataProvider.create("notes", {
           data: {
-            contact_id: idsMaps.contacts[dataToImport.contact_id],
-            sales_id: idsMaps.sales[dataToImport.sales_id] ?? currentSale.id,
+            target_type: "contact",
+            target_id: idsMaps.contacts[dataToImport.contact_id],
+            actor_id: idsMaps.actors[dataToImport.actor_id] ?? currentActor.id,
             text: dataToImport.text,
-            date: dataToImport.date,
+            created_at: dataToImport.date,
             attachments,
           },
         });
@@ -531,9 +532,9 @@ export const useImportFromJson = (): [
         return;
       }
       try {
-        if (idsMaps.sales[dataToImport.sales_id] == null) {
+        if (idsMaps.actors[dataToImport.actor_id] == null) {
           console.error(
-            `task ${dataToImport.text} has an invalid sales ID: ${dataToImport.sales_id}. Fallback to default sale`,
+            `task ${dataToImport.text} has an invalid actor ID: ${dataToImport.actor_id}. Fallback to default actor`,
           );
         }
         if (idsMaps.contacts[dataToImport.contact_id] == null) {
@@ -558,7 +559,7 @@ export const useImportFromJson = (): [
         await dataProvider.create("tasks", {
           data: {
             contact_id: idsMaps.contacts[dataToImport.contact_id],
-            sales_id: idsMaps.sales[dataToImport.sales_id] ?? currentSale.id,
+            actor_id: idsMaps.actors[dataToImport.actor_id] ?? currentActor.id,
             text: dataToImport.text,
             due_date: dataToImport.due_date || undefined,
             done_date: dataToImport.done_date || undefined,
@@ -596,7 +597,7 @@ export const useImportFromJson = (): [
 
     const parser = new JSONParser({
       paths: [
-        "$.sales.*",
+        "$.actors.*",
         "$.companies.*",
         "$.contacts.*",
         "$.notes.*",
@@ -617,7 +618,7 @@ export const useImportFromJson = (): [
         currentTask = null;
       }
     };
-    let currentType: Types = "sales";
+    let currentType: Types = "actors";
     while (true) {
       const { done, value: parsedElementInfo } = await reader.read();
       if (done) {
@@ -639,8 +640,8 @@ export const useImportFromJson = (): [
         currentType = type;
       }
       switch (type) {
-        case "sales": {
-          currentBatch.push(importSale(value));
+        case "actors": {
+          currentBatch.push(importActor(value));
           break;
         }
         case "companies": {
@@ -686,7 +687,7 @@ export const useImportFromJson = (): [
   return [state, importFile, reset];
 };
 
-const TYPES = ["sales", "companies", "contacts", "notes", "tasks"] as const;
+const TYPES = ["actors", "companies", "contacts", "notes", "tasks"] as const;
 type Types = (typeof TYPES)[number];
 
 const getType = (value: string | undefined): Types | undefined => {
@@ -695,14 +696,14 @@ const getType = (value: string | undefined): Types | undefined => {
   return undefined;
 };
 
-type SaleImport = {
+type ActorImport = {
   id: number;
   email: string;
   first_name: string;
   last_name: string;
 };
 
-const isSale = (data: any): data is SaleImport =>
+const isActor = (data: any): data is ActorImport =>
   data != null &&
   typeof data === "object" &&
   !Array.isArray(data) &&
@@ -714,7 +715,7 @@ const isSale = (data: any): data is SaleImport =>
 type CompanyImport = {
   id: number;
   name: string;
-  sales_id?: number;
+  actor_id?: number;
   description?: string;
   city?: string;
   country?: string;
@@ -742,7 +743,7 @@ const isCompany = (data: any): data is CompanyImport =>
 
 type ContactImport = {
   id: number;
-  sales_id: number;
+  actor_id: number;
   company_id?: number;
   first_name: string;
   last_name: string;
@@ -767,7 +768,7 @@ const isContact = (data: any): data is ContactImport =>
 
 type NoteImport = {
   contact_id: number;
-  sales_id: number;
+  actor_id: number;
   text: string;
   date: string;
   attachments: Array<{ url: string; name: string }>;
@@ -779,14 +780,14 @@ const isNote = (data: any): data is NoteImport =>
   data != null &&
   typeof data === "object" &&
   !Array.isArray(data) &&
-  data.sales_id != null &&
+  data.actor_id != null &&
   data.contact_id != null &&
   data.text != null &&
   data.date != null;
 
 type TaskImport = {
   contact_id: number;
-  sales_id: number;
+  actor_id: number;
   text: string;
   due_date?: string;
   done_date?: string;
@@ -798,7 +799,7 @@ const isTask = (data: any): data is TaskImport =>
   data != null &&
   typeof data === "object" &&
   !Array.isArray(data) &&
-  data.sales_id != null &&
+  data.actor_id != null &&
   data.contact_id != null &&
   data.text != null;
 

@@ -10,7 +10,6 @@ import {
   useUpdate,
 } from "ra-core";
 import { CreateSheet } from "../misc/CreateSheet";
-import { foreignKeyMapping } from "./foreignKeyMapping";
 import { NoteInputs } from "./NoteInputs";
 import { getCurrentDate } from "./utils";
 
@@ -43,7 +42,7 @@ export const NoteCreateSheet = ({
   if (!identity) return null;
 
   const handleSuccess = async (data: any) => {
-    const referenceRecordId = data[foreignKeyMapping["contacts"]];
+    const referenceRecordId = data.target_id;
     if (!referenceRecordId) return;
     const { data: contact } = await dataProvider.getOne("contacts", {
       id: referenceRecordId,
@@ -65,7 +64,7 @@ export const NoteCreateSheet = ({
 
   return (
     <CreateSheet
-      resource="contact_notes"
+      resource="notes"
       title={
         <h1 className="text-xl font-semibold truncate pr-10">
           {!selectContact
@@ -76,13 +75,15 @@ export const NoteCreateSheet = ({
         </h1>
       }
       redirect={false}
-      defaultValues={{ sales_id: identity?.id }}
+      defaultValues={{ actor_id: identity?.id }}
       transform={(data: any) => ({
         ...data,
-        [foreignKeyMapping["contacts"]]:
-          contact_id ?? data[foreignKeyMapping["contacts"]],
-        sales_id: identity.id,
-        date: new Date(data.date || getCurrentDate()).toISOString(),
+        target_type: "contact",
+        target_id: contact_id ?? data.target_id,
+        actor_id: identity.id,
+        created_at: new Date(
+          data.created_at || getCurrentDate(),
+        ).toISOString(),
       })}
       mutationOptions={{
         onSuccess: handleSuccess,

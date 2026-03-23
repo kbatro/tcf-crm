@@ -21,20 +21,64 @@ export interface ContactsTable {
   id: Generated<number>;
   first_name: string | null;
   last_name: string | null;
-  gender: string | null;
-  title: string | null;
-  email_jsonb: unknown | null; // JSONB array
-  phone_jsonb: unknown | null; // JSONB array
-  background: string | null;
   avatar: unknown | null; // JSONB
   first_seen: Date | null;
   last_seen: Date | null;
-  has_newsletter: boolean | null;
-  status: string | null;
-  tags: number[] | null;
-  company_id: number | null;
-  sales_id: number | null;
-  linkedin_url: string | null;
+  actor_id: number | null;
+}
+
+export interface GroupTypesTable {
+  id: Generated<number>;
+  name: string;
+  schema: unknown; // JSONB
+}
+
+export interface GroupsTable {
+  id: Generated<number>;
+  name: string;
+  group_type_id: number | null;
+  avatar: unknown | null; // JSONB
+  actor_id: number | null;
+  created_at: Date;
+}
+
+export interface GroupPropertiesTable {
+  id: Generated<number>;
+  group_id: number;
+  key: string;
+  value: string | null;
+  type: string;
+}
+
+export interface GroupMembersTable {
+  id: Generated<number>;
+  group_id: number;
+  contact_id: number;
+  role: string | null;
+  joined_at: Date;
+  left_at: Date | null;
+}
+
+export interface ChannelsTable {
+  id: Generated<number>;
+  contact_id: number;
+  type: string;
+  value: string;
+  label: string | null;
+}
+
+export interface PropertiesTable {
+  id: Generated<number>;
+  contact_id: number;
+  key: string;
+  value: string | null;
+  type: string | null;
+}
+
+export interface ContactTagsTable {
+  id: Generated<number>;
+  contact_id: number;
+  tag_id: number;
 }
 
 interface TasksTable {
@@ -44,41 +88,64 @@ interface TasksTable {
   text: string | null;
   due_date: Date;
   done_date: Date | null;
-  sales_id: number | null;
+  actor_id: number | null;
 }
 
-interface ContactNotesTable {
-  id: Generated<number>;
-  contact_id: number;
-  text: string | null;
-  date: Date | null;
-  sales_id: number | null;
-  status: string | null;
-  attachments: unknown[] | null; // JSONB array
-}
-
-interface DealsTable {
+interface IntentionsTable {
   id: Generated<number>;
   name: string;
-  company_id: number | null;
-  contact_ids: number[];
-  category: string | null;
-  stage: string;
+  type: string | null;
   description: string | null;
+  target_type: string | null;
+  target_id: number | null;
+  status: string;
+  outcome: string | null;
   amount: number | null;
+  expected_closing_date: Date | null;
   created_at: Date;
   updated_at: Date;
   archived_at: Date | null;
-  expected_closing_date: Date | null;
-  sales_id: number | null;
   index: number | null;
+}
+
+interface IntentionContactsTable {
+  id: Generated<number>;
+  intention_id: number;
+  contact_id: number;
+}
+
+interface AssignmentsTable {
+  id: Generated<number>;
+  intention_id: number;
+  actor_id: number | null;
+  role: string | null;
+}
+
+interface NotesTable {
+  id: Generated<number>;
+  target_type: string;
+  target_id: number;
+  text: string | null;
+  actor_id: number | null;
+  status: string | null;
+  created_at: Date;
+  attachments: unknown[] | null;
 }
 
 interface Database {
   contacts: ContactsTable;
+  channels: ChannelsTable;
+  properties: PropertiesTable;
+  contact_tags: ContactTagsTable;
   tasks: TasksTable;
-  contact_notes: ContactNotesTable;
-  deals: DealsTable;
+  intentions: IntentionsTable;
+  intention_contacts: IntentionContactsTable;
+  assignments: AssignmentsTable;
+  notes: NotesTable;
+  group_types: GroupTypesTable;
+  groups: GroupsTable;
+  group_properties: GroupPropertiesTable;
+  group_members: GroupMembersTable;
 }
 
 // Deno Postgres Driver for Kysely

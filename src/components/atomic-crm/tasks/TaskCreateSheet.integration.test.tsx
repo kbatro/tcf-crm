@@ -34,7 +34,7 @@ describe("TaskCreateSheet integration", () => {
             contact_id: 1,
             due_date: "2025-01-03T12:00:00.000Z",
             id: 1,
-            sales_id: 0,
+            actor_id: 0,
             text: "Existing seeded task",
             type: "email",
           },

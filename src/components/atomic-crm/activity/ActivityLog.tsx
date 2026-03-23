@@ -7,7 +7,7 @@ import { ActivityLogIterator } from "./ActivityLogIterator";
 type ActivityLogProps = {
   companyId?: Identifier;
   pageSize?: number;
-  context?: "company" | "contact" | "deal" | "all";
+  context?: "company" | "contact" | "intention" | "all";
 };
 
 export function ActivityLog({
@@ -15,12 +15,16 @@ export function ActivityLog({
   pageSize = 20,
   context = "all",
 }: ActivityLogProps) {
+  const filter = companyId
+    ? { target_type: "group", target_id: companyId }
+    : {};
+
   return (
     <ActivityLogContext.Provider value={context}>
       <InfiniteListBase
-        resource="activity_log"
-        filter={companyId ? { company_id: companyId } : {}}
-        sort={{ field: "date", order: "DESC" }}
+        resource="events"
+        filter={filter}
+        sort={{ field: "timestamp", order: "DESC" }}
         perPage={pageSize}
         disableSyncWithLocation
       >

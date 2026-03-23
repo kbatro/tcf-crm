@@ -10,7 +10,6 @@ import {
 } from "ra-core";
 import { useEffect, useRef, useState } from "react";
 import type { FieldValues, SubmitHandler } from "react-hook-form";
-import { ReferenceField } from "@/components/admin/reference-field";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -20,21 +19,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { CompanyAvatar } from "../companies/CompanyAvatar";
 import { Markdown } from "../misc/Markdown";
 import { RelativeDate } from "../misc/RelativeDate";
 import { Status } from "../misc/Status";
-import type { ContactNote, DealNote } from "../types";
+import type { Note as NoteType } from "../types";
 import { NoteAttachments } from "./NoteAttachments";
 import { NoteInputs } from "./NoteInputs";
-import { useGetSalesName } from "../sales/useGetSalesName";
+import { useGetActorName } from "../actors/useGetActorName";
 
 export const Note = ({
   showStatus,
   note,
 }: {
   showStatus?: boolean;
-  note: DealNote | ContactNote;
+  note: NoteType;
   isLast: boolean;
 }) => {
   const [isHover, setHover] = useState(false);
@@ -46,12 +44,11 @@ export const Note = ({
   const notify = useNotify();
   const translate = useTranslate();
   const { identity } = useGetIdentity();
-  const isCurrentUser = note.sales_id === identity?.id;
-  const salesName = useGetSalesName(note.sales_id, {
+  const isCurrentUser = note.actor_id === identity?.id;
+  const actorName = useGetActorName(note.actor_id, {
     enabled: !isCurrentUser,
   });
 
-  // Detect if content is truncated
   useEffect(() => {
     const el = contentRef.current;
     if (el) {
@@ -107,15 +104,12 @@ export const Note = ({
       className="mb-4"
     >
       <div className="flex items-center space-x-4 w-full">
-        <ReferenceField source="company_id" reference="companies" link="show">
-          <CompanyAvatar width={20} height={20} />
-        </ReferenceField>
         <div className="inline-flex h-full items-center text-sm text-muted-foreground">
           {translate(
             isCurrentUser
               ? "resources.notes.you_added"
               : "resources.notes.author_added",
-            { name: salesName },
+            { name: actorName },
           )}{" "}
           {showStatus && note.status && (
             <Status className="ml-2" status={note.status} />
@@ -159,7 +153,7 @@ export const Note = ({
         </span>
         <div className="flex-1"></div>
         <span className="text-sm text-muted-foreground">
-          <RelativeDate date={note.date} />
+          <RelativeDate date={note.created_at} />
         </span>
       </div>
       {isEditing ? (

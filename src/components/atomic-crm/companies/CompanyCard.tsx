@@ -49,14 +49,14 @@ export const CompanyCard = (props: { record?: Company }) => {
               </ReferenceManyField>
             ) : null}
           </div>
-          {record.nb_deals ? (
+          {record.nb_intentions ? (
             <div className="flex items-center ml-2 gap-0.5">
               <Handshake className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">{record.nb_deals}</span>
+              <span className="text-sm font-medium">{record.nb_intentions}</span>
               <span className="text-xs text-muted-foreground">
-                {translate("resources.deals.name", {
-                  smart_count: record.nb_deals,
-                  _: "Deal |||| Deals",
+                {translate("resources.intentions.name", {
+                  smart_count: record.nb_intentions,
+                  _: "Intention |||| Intentions",
                 })}
               </span>
             </div>

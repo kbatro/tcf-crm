@@ -142,12 +142,12 @@ export const ContactListFilter = () => {
 
       <FilterCategory
         icon={<Users />}
-        label="resources.contacts.fields.sales_id"
+        label="resources.contacts.fields.actor_id"
       >
         <ToggleFilterButton
           className="w-full justify-between h-10 md:h-8"
           label="crm.common.me"
-          value={{ sales_id: identity?.id }}
+          value={{ actor_id: identity?.id }}
           size={isMobile ? "lg" : undefined}
         />
       </FilterCategory>
@@ -256,7 +256,7 @@ export const ContactListFilterSummary = () => {
       <ActiveFilterButton
         className="w-auto justify-between h-8"
         label="resources.contacts.filters.managed_by_me"
-        value={{ sales_id: identity?.id }}
+        value={{ actor_id: identity?.id }}
       />
     </div>
   );
