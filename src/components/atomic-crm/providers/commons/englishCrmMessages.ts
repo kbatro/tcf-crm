@@ -1,15 +1,15 @@
 export const englishCrmMessages = {
   resources: {
     companies: {
-      name: "Company |||| Companies",
-      forcedCaseName: "Company",
+      name: "Group |||| Groups",
+      forcedCaseName: "Group",
       fields: {
-        name: "Company name",
+        name: "Group name",
         website: "Website",
         linkedin_url: "LinkedIn URL",
         phone_number: "Phone number",
         created_at: "Created at",
-        nb_contacts: "Number of people",
+        nb_contacts: "Number of members",
         revenue: "Revenue",
         sector: "Sector",
         size: "Size",
@@ -24,8 +24,8 @@ export const englishCrmMessages = {
         actor_id: "Assigned to",
       },
       empty: {
-        description: "It seems your company list is empty.",
-        title: "No companies found",
+        description: "It seems your group list is empty.",
+        title: "No groups found",
       },
       field_categories: {
         contact: "Contact",
@@ -34,16 +34,16 @@ export const englishCrmMessages = {
         context: "Context",
       },
       action: {
-        create: "Create Company",
-        edit: "Edit company",
-        new: "New Company",
-        show: "Show company",
+        create: "Create Group",
+        edit: "Edit group",
+        new: "New Group",
+        show: "Show group",
       },
       added_on: "Added on %{date}",
       followed_by: "Followed by %{name}",
       followed_by_you: "Followed by you",
-      no_contacts: "No people",
-      nb_contacts: "%{smart_count} person |||| %{smart_count} people",
+      no_members: "No members",
+      nb_members: "%{smart_count} member |||| %{smart_count} members",
       nb_intentions: "%{smart_count} intention |||| %{smart_count} intentions",
       sizes: {
         one_employee: "1 employee",
@@ -53,12 +53,12 @@ export const englishCrmMessages = {
         two_hundred_fifty_or_more_employees: "250 or more employees",
       },
       autocomplete: {
-        create_error: "An error occurred while creating the company",
+        create_error: "An error occurred while creating the group",
         create_item: "Create %{item}",
-        create_label: "Start typing to create a new company",
+        create_label: "Start typing to create a new group",
       },
       filters: {
-        only_mine: "Only companies I manage",
+        only_mine: "Only groups I manage",
       },
     },
     contacts: {
@@ -76,7 +76,7 @@ export const englishCrmMessages = {
         last_name: "Last name",
         last_seen: "Last seen",
         title: "Title",
-        company_id: "Company",
+        company_id: "Group",
         email_jsonb: "Email addresses",
         email: "Email",
         phone_jsonb: "Phone numbers",
@@ -162,7 +162,7 @@ export const englishCrmMessages = {
         before_this_month: "Before this month",
         before_this_week: "Before this week",
         managed_by_me: "Managed by me",
-        search: "Search name, company...",
+        search: "Search name, group...",
         this_week: "This week",
         today: "Today",
         tags: "Tags",
@@ -179,7 +179,7 @@ export const englishCrmMessages = {
       fields: {
         name: "Name",
         description: "Description",
-        target_id: "Company",
+        target_id: "Group",
         contact_ids: "People",
         type: "Type",
         amount: "Budget",
@@ -388,8 +388,8 @@ export const englishCrmMessages = {
       task_count: "%{smart_count} task |||| %{smart_count} tasks",
     },
     activity: {
-      added_company: "%{name} added company",
-      you_added_company: "You added company",
+      added_company: "%{name} added group",
+      you_added_company: "You added group",
       added_contact: "%{name} added",
       you_added_contact: "You added",
 
@@ -438,7 +438,7 @@ export const englishCrmMessages = {
       },
       idle: {
         description_1:
-          "You can import sales, companies, people, notes, and tasks.",
+          "You can import sales, groups, people, notes, and tasks.",
         description_2:
           "Data must be in a JSON file matching the following sample:",
       },

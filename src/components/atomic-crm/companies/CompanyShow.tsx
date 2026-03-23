@@ -124,8 +124,8 @@ const CompanyShowContent = () => {
                 </TabsTrigger>
                 <TabsTrigger value="contacts">
                   {record.nb_contacts === 0
-                    ? translate("resources.companies.no_contacts")
-                    : translate("resources.companies.nb_contacts", {
+                    ? translate("resources.companies.no_members")
+                    : translate("resources.companies.nb_members", {
                         smart_count: record.nb_contacts,
                       })}
                 </TabsTrigger>

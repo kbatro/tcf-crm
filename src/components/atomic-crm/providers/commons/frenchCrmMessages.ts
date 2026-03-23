@@ -3,15 +3,15 @@ import type { CrmMessages } from "./englishCrmMessages";
 export const frenchCrmMessages = {
   resources: {
     companies: {
-      name: "Entreprise |||| Entreprises",
-      forcedCaseName: "Entreprise",
+      name: "Groupe |||| Groupes",
+      forcedCaseName: "Groupe",
       fields: {
-        name: "Nom de l'entreprise",
+        name: "Nom du groupe",
         website: "Site web",
         linkedin_url: "LinkedIn",
         phone_number: "Numéro de téléphone",
         created_at: "Date de création",
-        nb_contacts: "Nombre de personnes",
+        nb_contacts: "Nombre de membres",
         revenue: "Chiffre d'affaires",
         sector: "Secteur",
         size: "Taille",
@@ -26,8 +26,8 @@ export const frenchCrmMessages = {
         actor_id: "Assigné à",
       },
       empty: {
-        description: "Il semble que la liste de vos entreprises soit vide.",
-        title: "Aucune entreprise trouvée",
+        description: "Il semble que la liste de vos groupes soit vide.",
+        title: "Aucun groupe trouvé",
       },
       field_categories: {
         contact: "Contact",
@@ -36,16 +36,16 @@ export const frenchCrmMessages = {
         context: "Contexte",
       },
       action: {
-        create: "Créer une entreprise",
-        edit: "Modifier l'entreprise",
-        new: "Nouvelle entreprise",
-        show: "Afficher l'entreprise",
+        create: "Créer un groupe",
+        edit: "Modifier le groupe",
+        new: "Nouveau groupe",
+        show: "Afficher le groupe",
       },
-      added_on: "Ajoutée le %{date}",
-      followed_by: "Suivie par %{name}",
-      followed_by_you: "Suivie par vous",
-      no_contacts: "Aucune personne",
-      nb_contacts: "%{smart_count} personne |||| %{smart_count} personnes",
+      added_on: "Ajouté le %{date}",
+      followed_by: "Suivi par %{name}",
+      followed_by_you: "Suivi par vous",
+      no_members: "Aucun membre",
+      nb_members: "%{smart_count} membre |||| %{smart_count} membres",
       nb_intentions: "%{smart_count} intention |||| %{smart_count} intentions",
       sizes: {
         one_employee: "1 employé",
@@ -56,12 +56,12 @@ export const frenchCrmMessages = {
       },
       autocomplete: {
         create_error:
-          "Une erreur s'est produite lors de la création de l'entreprise",
+          "Une erreur s'est produite lors de la création du groupe",
         create_item: "Créer %{item}",
-        create_label: "Commencez à taper pour créer une nouvelle entreprise",
+        create_label: "Commencez à taper pour créer un nouveau groupe",
       },
       filters: {
-        only_mine: "Seulement les entreprises que je gère",
+        only_mine: "Seulement les groupes que je gère",
       },
     },
     contacts: {
@@ -79,7 +79,7 @@ export const frenchCrmMessages = {
         last_name: "Nom",
         last_seen: "Dernière activité",
         title: "Titre",
-        company_id: "Entreprise",
+        company_id: "Groupe",
         email_jsonb: "Adresses e-mail",
         email: "E-mail",
         phone_jsonb: "Numéros de téléphone",
@@ -166,7 +166,7 @@ export const frenchCrmMessages = {
         before_this_month: "Avant ce mois-ci",
         before_this_week: "Avant cette semaine",
         managed_by_me: "Géré par moi",
-        search: "Rechercher nom, entreprise...",
+        search: "Rechercher nom, groupe...",
         this_week: "Cette semaine",
         today: "Aujourd'hui",
         tags: "Étiquettes",
@@ -183,7 +183,7 @@ export const frenchCrmMessages = {
       fields: {
         name: "Nom",
         description: "Description",
-        target_id: "Entreprise",
+        target_id: "Groupe",
         contact_ids: "Personnes",
         type: "Type",
         amount: "Budget",
@@ -393,8 +393,8 @@ export const frenchCrmMessages = {
       me: "Moi",
     },
     activity: {
-      added_company: "%{name} a ajouté l'entreprise",
-      you_added_company: "Vous avez ajouté l'entreprise",
+      added_company: "%{name} a ajouté le groupe",
+      you_added_company: "Vous avez ajouté le groupe",
       added_contact: "%{name} a ajouté la personne",
       you_added_contact: "Vous avez ajouté la personne",
       added_note: "%{name} a ajouté une note sur",
@@ -446,7 +446,7 @@ export const frenchCrmMessages = {
       },
       idle: {
         description_1:
-          "Vous pouvez importer des ventes, des entreprises, des personnes, des notes et des tâches.",
+          "Vous pouvez importer des ventes, des groupes, des personnes, des notes et des tâches.",
         description_2:
           "Les données doivent se trouver dans un fichier JSON correspondant à l'exemple suivant :",
       },
