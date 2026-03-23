@@ -12,9 +12,8 @@ export const useGetActorName = (
     { enabled },
   );
 
-  return data
-    ? `${data[0].first_name} ${data[0].last_name}`
-    : error
-      ? "??"
-      : "";
+  const actor = data?.[0];
+  if (actor) return `${actor.first_name} ${actor.last_name}`;
+  if (error) return "??";
+  return "";
 };
