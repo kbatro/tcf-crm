@@ -150,30 +150,6 @@
           "type": "registry:component"
         },
         {
-          "path": "src/components/atomic-crm/sales/useGetSalesName.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/sales/index.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/sales/SalesList.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/sales/SalesInputs.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/sales/SalesEdit.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/sales/SalesCreate.tsx",
-          "type": "registry:component"
-        },
-        {
           "path": "src/components/atomic-crm/root/useConfigurationLoader.ts",
           "type": "registry:component"
         },
@@ -262,7 +238,11 @@
           "type": "registry:component"
         },
         {
-          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/sales.ts",
+          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/notes.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/intentions.ts",
           "type": "registry:component"
         },
         {
@@ -270,15 +250,15 @@
           "type": "registry:component"
         },
         {
+          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/groups.ts",
+          "type": "registry:component"
+        },
+        {
           "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/finalize.ts",
           "type": "registry:component"
         },
         {
-          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/deals.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/dealNotes.ts",
+          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/events.ts",
           "type": "registry:component"
         },
         {
@@ -286,11 +266,7 @@
           "type": "registry:component"
         },
         {
-          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/contactNotes.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/companies.ts",
+          "path": "src/components/atomic-crm/providers/fakerest/dataGenerator/actors.ts",
           "type": "registry:component"
         },
         {
@@ -339,10 +315,6 @@
         },
         {
           "path": "src/components/atomic-crm/notes/index.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/notes/foreignKeyMapping.ts",
           "type": "registry:component"
         },
         {
@@ -526,67 +498,67 @@
           "type": "registry:component"
         },
         {
+          "path": "src/components/atomic-crm/intentions/statuses.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/intentionUtils.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/OnlyMineInput.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionShow.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionListContent.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionList.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionInputs.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionEmpty.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionEdit.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionCreate.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionColumn.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionCard.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/IntentionArchivedList.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/intentions/ContactList.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "src/components/atomic-crm/filters/FilterCategory.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/stages.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/index.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/dealUtils.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/OnlyMineInput.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealShow.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealListContent.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealList.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealInputs.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealEmpty.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealEdit.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealCreate.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealColumn.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealCard.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/DealArchivedList.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/deals/ContactList.tsx",
           "type": "registry:component"
         },
         {
@@ -606,15 +578,11 @@
           "type": "registry:component"
         },
         {
+          "path": "src/components/atomic-crm/dashboard/IntentionsChart.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "src/components/atomic-crm/dashboard/HotContacts.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/dashboard/DealsPipeline.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/dashboard/DealsChart.tsx",
           "type": "registry:component"
         },
         {
@@ -790,6 +758,34 @@
           "type": "registry:component"
         },
         {
+          "path": "src/components/atomic-crm/actors/useGetActorName.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/actors/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/actors/ActorsList.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/actors/ActorsInputs.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/actors/ActorsEdit.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/actors/ActorsCreate.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/activity/EventItem.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "src/components/atomic-crm/activity/ActivityLogNote.tsx",
           "type": "registry:component"
         },
@@ -798,27 +794,7 @@
           "type": "registry:component"
         },
         {
-          "path": "src/components/atomic-crm/activity/ActivityLogDealNoteCreated.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/activity/ActivityLogDealCreated.tsx",
-          "type": "registry:component"
-        },
-        {
           "path": "src/components/atomic-crm/activity/ActivityLogContext.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/activity/ActivityLogContactNoteCreated.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/activity/ActivityLogContactCreated.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "src/components/atomic-crm/activity/ActivityLogCompanyCreated.tsx",
           "type": "registry:component"
         },
         {

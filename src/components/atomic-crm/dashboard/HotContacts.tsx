@@ -14,7 +14,7 @@ import { SimpleList } from "../simple-list/SimpleList";
 import { Avatar } from "../contacts/Avatar";
 import type { Contact } from "../types";
 
-export const HotContacts = () => {
+export const RecentContacts = () => {
   const { identity } = useGetIdentity();
   const translate = useTranslate();
   const {
@@ -26,7 +26,7 @@ export const HotContacts = () => {
     {
       pagination: { page: 1, perPage: 10 },
       sort: { field: "last_seen", order: "DESC" },
-      filter: { status: "hot", actor_id: identity?.id },
+      filter: { actor_id: identity?.id },
     },
     { enabled: Number.isInteger(identity?.id) },
   );
@@ -38,7 +38,7 @@ export const HotContacts = () => {
           <Users className="text-muted-foreground w-6 h-6" />
         </div>
         <h2 className="text-xl font-semibold text-muted-foreground">
-          {translate("resources.contacts.hot.title")}
+          {translate("resources.contacts.recent.title")}
         </h2>
         <TooltipProvider>
           <Tooltip>
@@ -84,11 +84,8 @@ export const HotContacts = () => {
           leftAvatar={(contact) => <Avatar record={contact} />}
           empty={
             <div className="p-4">
-              <p className="text-sm mb-4">
-                {translate("resources.contacts.hot.empty_hint")}
-              </p>
               <p className="text-sm">
-                {translate("resources.contacts.hot.empty_change_status")}
+                {translate("resources.contacts.recent.empty")}
               </p>
             </div>
           }

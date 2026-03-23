@@ -14,7 +14,6 @@ export const ContactCreate = () => {
         ...data,
         first_seen: new Date().toISOString(),
         last_seen: new Date().toISOString(),
-        tags: [],
       })}
     >
       <div className="mt-2 flex lg:mr-72">

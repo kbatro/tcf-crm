@@ -168,11 +168,9 @@ export const englishCrmMessages = {
         tags: "Tags",
         tasks: "Tasks",
       },
-      hot: {
-        empty_change_status:
-          'Change the status of a contact by adding a note to that contact and clicking on "show options".',
-        empty_hint: 'Contacts with a "hot" status will appear here.',
-        title: "Hot Contacts",
+      recent: {
+        empty: "No recent contacts yet.",
+        title: "Recent Contacts",
       },
     },
     intentions: {

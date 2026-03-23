@@ -23,7 +23,6 @@ export const ContactCreateSheet = ({
         ...data,
         first_seen: new Date().toISOString(),
         last_seen: new Date().toISOString(),
-        tags: [],
       })}
       open={open}
       onOpenChange={onOpenChange}

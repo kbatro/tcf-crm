@@ -4,7 +4,7 @@ import type { Contact, Note } from "../types";
 import { DashboardActivityLog } from "./DashboardActivityLog";
 import { DashboardStepper } from "./DashboardStepper";
 import { IntentionsChart } from "./IntentionsChart";
-import { HotContacts } from "./HotContacts";
+import { RecentContacts } from "./HotContacts";
 import { TasksList } from "./TasksList";
 import { Welcome } from "./Welcome";
 
@@ -49,7 +49,7 @@ export const Dashboard = () => {
       <div className="md:col-span-3">
         <div className="flex flex-col gap-4">
           {import.meta.env.VITE_IS_DEMO === "true" ? <Welcome /> : null}
-          <HotContacts />
+          <RecentContacts />
         </div>
       </div>
       <div className="md:col-span-6">

@@ -172,11 +172,9 @@ export const frenchCrmMessages = {
         tags: "Étiquettes",
         tasks: "Tâches",
       },
-      hot: {
-        empty_change_status:
-          'Changez le statut d\'un contact en ajoutant une note à ce contact et en cliquant sur "afficher les options".',
-        empty_hint: 'Les contacts avec un statut "chaud" apparaîtront ici.',
-        title: "Contacts chauds",
+      recent: {
+        empty: "Aucun contact récent.",
+        title: "Contacts récents",
       },
     },
     intentions: {
