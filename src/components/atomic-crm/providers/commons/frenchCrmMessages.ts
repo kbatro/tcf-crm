@@ -11,7 +11,7 @@ export const frenchCrmMessages = {
         linkedin_url: "LinkedIn",
         phone_number: "Numéro de téléphone",
         created_at: "Date de création",
-        nb_contacts: "Nombre de contacts",
+        nb_contacts: "Nombre de personnes",
         revenue: "Chiffre d'affaires",
         sector: "Secteur",
         size: "Taille",
@@ -44,8 +44,8 @@ export const frenchCrmMessages = {
       added_on: "Ajoutée le %{date}",
       followed_by: "Suivie par %{name}",
       followed_by_you: "Suivie par vous",
-      no_contacts: "Aucun contact",
-      nb_contacts: "%{smart_count} contact |||| %{smart_count} contacts",
+      no_contacts: "Aucune personne",
+      nb_contacts: "%{smart_count} personne |||| %{smart_count} personnes",
       nb_intentions: "%{smart_count} intention |||| %{smart_count} intentions",
       sizes: {
         one_employee: "1 employé",
@@ -65,8 +65,8 @@ export const frenchCrmMessages = {
       },
     },
     contacts: {
-      name: "Contact |||| Contacts",
-      forcedCaseName: "Contact",
+      name: "Personne |||| Personnes",
+      forcedCaseName: "Personne",
       field_categories: {
         background_info: "Informations complémentaires",
         identity: "Identité",
@@ -90,13 +90,13 @@ export const frenchCrmMessages = {
         actor_id: "Assigné à",
       },
       action: {
-        add: "Ajouter un contact",
-        add_first: "Ajoutez votre premier contact",
-        create: "Créer un contact",
-        edit: "Modifier le contact",
+        add: "Ajouter une personne",
+        add_first: "Ajoutez votre première personne",
+        create: "Ajouter une personne",
+        edit: "Modifier la personne",
         export_vcard: "Exporter en vCard",
-        new: "Nouveau contact",
-        show: "Afficher le contact",
+        new: "Nouvelle personne",
+        show: "Afficher la personne",
       },
       background: {
         last_activity_on: "Dernière activité le %{date}",
@@ -107,16 +107,16 @@ export const frenchCrmMessages = {
       position_at: "%{title} chez",
       position_at_company: "%{title} chez %{company}",
       empty: {
-        description: "Il semble que votre liste de contacts soit vide.",
-        title: "Aucun contact trouvé",
+        description: "Il semble que votre liste de personnes soit vide.",
+        title: "Aucune personne trouvée",
       },
       import: {
-        title: "Importer des contacts",
+        title: "Importer des personnes",
         button: "Importer un fichier CSV",
         complete:
-          "Import des contacts terminé. %{importCount} contacts importés, %{errorCount} erreurs",
+          "Import des personnes terminé. %{importCount} personnes importées, %{errorCount} erreurs",
         progress:
-          "%{importCount} / %{rowCount} contacts importés, avec %{errorCount} erreurs.",
+          "%{importCount} / %{rowCount} personnes importées, avec %{errorCount} erreurs.",
         error:
           "Échec de l'importation de ce fichier. Veuillez vous assurer que vous avez fourni un fichier CSV valide.",
         imported: "Importé",
@@ -127,7 +127,7 @@ export const frenchCrmMessages = {
           "Voici un exemple de fichier CSV que vous pouvez utiliser comme modèle",
         stop: "Arrêter l'importation",
         csv_file: "Fichier CSV",
-        contacts_label: "contact |||| contacts",
+        contacts_label: "personne |||| personnes",
       },
       inputs: {
         genders: {
@@ -142,22 +142,22 @@ export const frenchCrmMessages = {
         },
       },
       list: {
-        error_loading: "Erreur lors du chargement des contacts",
+        error_loading: "Erreur lors du chargement des personnes",
       },
       merge: {
-        action: "Fusionner avec un autre contact",
-        confirm: "Fusionner les contacts",
-        current_contact: "Contact actuel (sera supprimé)",
-        description: "Fusionnez ce contact avec un autre.",
-        error: "Échec de la fusion des contacts",
+        action: "Fusionner avec une autre personne",
+        confirm: "Fusionner les personnes",
+        current_contact: "Personne actuelle (sera supprimée)",
+        description: "Fusionnez cette personne avec une autre.",
+        error: "Échec de la fusion des personnes",
         merging: "Fusion...",
         no_additional_data: "Aucune donnée supplémentaire à fusionner",
-        select_target: "Veuillez sélectionner un contact avec lequel fusionner",
-        success: "Contacts fusionnés avec succès",
-        target_contact: "Contact cible (sera conservé)",
-        title: "Fusionner les contacts",
+        select_target: "Veuillez sélectionner une personne avec laquelle fusionner",
+        success: "Personnes fusionnées avec succès",
+        target_contact: "Personne cible (sera conservée)",
+        title: "Fusionner les personnes",
         warning_description:
-          "Toutes les données seront transférées au deuxième contact. Cette action ne peut pas être annulée.",
+          "Toutes les données seront transférées à la deuxième personne. Cette action ne peut pas être annulée.",
         warning_title: "Avertissement : opération destructrice",
         what_will_be_merged: "Ce qui sera fusionné :",
       },
@@ -173,8 +173,8 @@ export const frenchCrmMessages = {
         tasks: "Tâches",
       },
       recent: {
-        empty: "Aucun contact récent.",
-        title: "Contacts récents",
+        empty: "Aucune personne récente.",
+        title: "Personnes récentes",
       },
     },
     intentions: {
@@ -184,7 +184,7 @@ export const frenchCrmMessages = {
         name: "Nom",
         description: "Description",
         target_id: "Entreprise",
-        contact_ids: "Contacts",
+        contact_ids: "Personnes",
         type: "Type",
         amount: "Budget",
         expected_closing_date: "Date de clôture prévue",
@@ -232,7 +232,7 @@ export const frenchCrmMessages = {
         status: "Statut",
         date: "Date",
         attachments: "Pièces jointes",
-        contact_id: "Contact",
+        contact_id: "Personne",
         deal_id: "Affaire",
       },
       action: {
@@ -259,7 +259,7 @@ export const frenchCrmMessages = {
       },
       note_for_contact: "Note pour %{name}",
       stepper: {
-        hint: "Accédez à une page de contact et ajoutez une note",
+        hint: "Accédez à une page de personne et ajoutez une note",
       },
       added: "Note ajoutée",
       inputs: {
@@ -301,7 +301,7 @@ export const frenchCrmMessages = {
         text: "Description",
         due_date: "Date d'échéance",
         type: "Type",
-        contact_id: "Contact",
+        contact_id: "Personne",
         due_short: "échéance",
       },
       action: {
@@ -325,7 +325,7 @@ export const frenchCrmMessages = {
         edit_for: "Modifier la tâche pour %{name}",
       },
       empty: "Aucune tâche pour l'instant",
-      empty_list_hint: "Les tâches ajoutées à vos contacts apparaîtront ici.",
+      empty_list_hint: "Les tâches ajoutées à vos personnes apparaîtront ici.",
       filters: {
         later: "Plus tard",
         overdue: "En retard",
@@ -395,8 +395,8 @@ export const frenchCrmMessages = {
     activity: {
       added_company: "%{name} a ajouté l'entreprise",
       you_added_company: "Vous avez ajouté l'entreprise",
-      added_contact: "%{name} a ajouté le contact",
-      you_added_contact: "Vous avez ajouté le contact",
+      added_contact: "%{name} a ajouté la personne",
+      you_added_contact: "Vous avez ajouté la personne",
       added_note: "%{name} a ajouté une note sur",
       you_added_note: "Vous avez ajouté une note sur",
       added_note_about_intention:
@@ -446,7 +446,7 @@ export const frenchCrmMessages = {
       },
       idle: {
         description_1:
-          "Vous pouvez importer des ventes, des entreprises, des contacts, des entreprises, des notes et des tâches.",
+          "Vous pouvez importer des ventes, des entreprises, des personnes, des notes et des tâches.",
         description_2:
           "Les données doivent se trouver dans un fichier JSON correspondant à l'exemple suivant :",
       },
@@ -515,7 +515,7 @@ export const frenchCrmMessages = {
     profile: {
       inbound: {
         description:
-          "Vous pouvez commencer à envoyer des e-mails vers l'adresse de réception de votre serveur, par exemple en l'ajoutant au champ %{field}. TCF CRM traitera les e-mails et ajoutera des notes aux contacts correspondants.",
+          "Vous pouvez commencer à envoyer des e-mails vers l'adresse de réception de votre serveur, par exemple en l'ajoutant au champ %{field}. TCF CRM traitera les e-mails et ajoutera des notes aux personnes correspondantes.",
         title: "E-mail entrant",
       },
       password: {

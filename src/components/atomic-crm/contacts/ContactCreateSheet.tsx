@@ -1,4 +1,4 @@
-import { useGetIdentity, useTranslate } from "ra-core";
+import { useTranslate } from "ra-core";
 import { CreateSheet } from "../misc/CreateSheet";
 import { ContactInputs } from "./ContactInputs";
 import type { Contact } from "../types";
@@ -12,13 +12,11 @@ export const ContactCreateSheet = ({
   open,
   onOpenChange,
 }: ContactCreateSheetProps) => {
-  const { identity } = useGetIdentity();
   const translate = useTranslate();
   return (
     <CreateSheet
       resource="contacts"
       title={translate("resources.contacts.action.new")}
-      defaultValues={{ actor_id: identity?.id }}
       transform={(data: Contact) => ({
         ...data,
         first_seen: new Date().toISOString(),

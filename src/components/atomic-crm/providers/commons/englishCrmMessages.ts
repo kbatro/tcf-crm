@@ -9,7 +9,7 @@ export const englishCrmMessages = {
         linkedin_url: "LinkedIn URL",
         phone_number: "Phone number",
         created_at: "Created at",
-        nb_contacts: "Number of contacts",
+        nb_contacts: "Number of people",
         revenue: "Revenue",
         sector: "Sector",
         size: "Size",
@@ -42,8 +42,8 @@ export const englishCrmMessages = {
       added_on: "Added on %{date}",
       followed_by: "Followed by %{name}",
       followed_by_you: "Followed by you",
-      no_contacts: "No contact",
-      nb_contacts: "%{smart_count} contact |||| %{smart_count} contacts",
+      no_contacts: "No people",
+      nb_contacts: "%{smart_count} person |||| %{smart_count} people",
       nb_intentions: "%{smart_count} intention |||| %{smart_count} intentions",
       sizes: {
         one_employee: "1 employee",
@@ -62,8 +62,8 @@ export const englishCrmMessages = {
       },
     },
     contacts: {
-      name: "Contact |||| Contacts",
-      forcedCaseName: "Contact",
+      name: "Person |||| People",
+      forcedCaseName: "Person",
       field_categories: {
         background_info: "Background info",
         identity: "Identity",
@@ -87,13 +87,13 @@ export const englishCrmMessages = {
         actor_id: "Assigned to",
       },
       action: {
-        add: "Add contact",
-        add_first: "Add your first contact",
-        create: "Create contact",
-        edit: "Edit contact",
+        add: "Add person",
+        add_first: "Add your first person",
+        create: "Add person",
+        edit: "Edit person",
         export_vcard: "Export to vCard",
-        new: "New Contact",
-        show: "Show contact",
+        new: "New person",
+        show: "Show person",
       },
       background: {
         last_activity_on: "Last activity on %{date}",
@@ -104,16 +104,16 @@ export const englishCrmMessages = {
       position_at: "%{title} at",
       position_at_company: "%{title} at %{company}",
       empty: {
-        description: "It seems your contact list is empty.",
-        title: "No contacts found",
+        description: "It seems your people list is empty.",
+        title: "No people found",
       },
       import: {
-        title: "Import contacts",
+        title: "Import people",
         button: "Import CSV",
         complete:
-          "Contacts import complete. Imported %{importCount} contacts, with %{errorCount} errors",
+          "People import complete. Imported %{importCount} people, with %{errorCount} errors",
         progress:
-          "Imported %{importCount} / %{rowCount} contacts, with %{errorCount} errors.",
+          "Imported %{importCount} / %{rowCount} people, with %{errorCount} errors.",
         error:
           "Failed to import this file, please make sure your provided a valid CSV file.",
         imported: "Imported",
@@ -123,7 +123,7 @@ export const englishCrmMessages = {
         sample_hint: "Here is a sample CSV file you can use as a template",
         stop: "Stop import",
         csv_file: "CSV File",
-        contacts_label: "contact |||| contacts",
+        contacts_label: "person |||| people",
       },
       inputs: {
         genders: {
@@ -138,22 +138,22 @@ export const englishCrmMessages = {
         },
       },
       list: {
-        error_loading: "Error loading contacts",
+        error_loading: "Error loading people",
       },
       merge: {
-        action: "Merge with another contact",
-        confirm: "Merge Contacts",
-        current_contact: "Current Contact (will be deleted)",
-        description: "Merge this contact with another one.",
-        error: "Failed to merge contacts",
+        action: "Merge with another person",
+        confirm: "Merge People",
+        current_contact: "Current Person (will be deleted)",
+        description: "Merge this person with another one.",
+        error: "Failed to merge people",
         merging: "Merging...",
         no_additional_data: "No additional data to merge",
-        select_target: "Please select a contact to merge with",
-        success: "Contacts merged successfully",
-        target_contact: "Target Contact (will be kept)",
-        title: "Merge Contact",
+        select_target: "Please select a person to merge with",
+        success: "People merged successfully",
+        target_contact: "Target Person (will be kept)",
+        title: "Merge Person",
         warning_description:
-          "All data will be transferred to the second contact. This action cannot be undone.",
+          "All data will be transferred to the second person. This action cannot be undone.",
         warning_title: "Warning: Destructive Operation",
         what_will_be_merged: "What will be merged:",
       },
@@ -169,8 +169,8 @@ export const englishCrmMessages = {
         tasks: "Tasks",
       },
       recent: {
-        empty: "No recent contacts yet.",
-        title: "Recent Contacts",
+        empty: "No recent people yet.",
+        title: "Recent People",
       },
     },
     intentions: {
@@ -180,7 +180,7 @@ export const englishCrmMessages = {
         name: "Name",
         description: "Description",
         target_id: "Company",
-        contact_ids: "Contacts",
+        contact_ids: "People",
         type: "Type",
         amount: "Budget",
         expected_closing_date: "Expected closing date",
@@ -228,7 +228,7 @@ export const englishCrmMessages = {
         status: "Status",
         date: "Date",
         attachments: "Attachments",
-        contact_id: "Contact",
+        contact_id: "Person",
         intention_id: "Intention",
       },
       action: {
@@ -255,7 +255,7 @@ export const englishCrmMessages = {
       },
       note_for_contact: "Note for %{name}",
       stepper: {
-        hint: "Go to a contact page and add a note",
+        hint: "Go to a person page and add a note",
       },
       added: "Note added",
       inputs: {
@@ -296,7 +296,7 @@ export const englishCrmMessages = {
         text: "Description",
         due_date: "Due date",
         type: "Type",
-        contact_id: "Contact",
+        contact_id: "Person",
         due_short: "due",
       },
       action: {
@@ -320,7 +320,7 @@ export const englishCrmMessages = {
         edit_for: "Edit task for %{name}",
       },
       empty: "No tasks yet",
-      empty_list_hint: "Tasks added to your contacts will appear here.",
+      empty_list_hint: "Tasks added to your people will appear here.",
       filters: {
         later: "Later",
         overdue: "Overdue",
@@ -392,6 +392,7 @@ export const englishCrmMessages = {
       you_added_company: "You added company",
       added_contact: "%{name} added",
       you_added_contact: "You added",
+
       added_note: "%{name} added a note about",
       you_added_note: "You added a note about",
       added_note_about_intention: "%{name} added a note about intention",
@@ -437,7 +438,7 @@ export const englishCrmMessages = {
       },
       idle: {
         description_1:
-          "You can import sales, companies, contacts, companies, notes, and tasks.",
+          "You can import sales, companies, people, notes, and tasks.",
         description_2:
           "Data must be in a JSON file matching the following sample:",
       },
@@ -507,7 +508,7 @@ export const englishCrmMessages = {
     profile: {
       inbound: {
         description:
-          "You can start sending emails to your server's inbound email address, e.g. by adding it to the %{field} field. TCF CRM will process the emails and add notes to the corresponding contacts.",
+          "You can start sending emails to your server's inbound email address, e.g. by adding it to the %{field} field. TCF CRM will process the emails and add notes to the corresponding people.",
         title: "Inbound email",
       },
       password: {
