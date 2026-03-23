@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   Form,
   useDataProvider,
-  useGetIdentity,
   useListContext,
   useRedirect,
   type GetListResult,
@@ -67,15 +66,12 @@ export const IntentionCreate = ({ open }: { open: boolean }) => {
     redirect("/intentions");
   };
 
-  const { identity } = useGetIdentity();
-
   return (
     <Dialog open={open} onOpenChange={() => handleClose()}>
       <DialogContent className="lg:max-w-4xl overflow-y-auto max-h-9/10 top-1/20 translate-y-0">
         <Create resource="intentions" mutationOptions={{ onSuccess }}>
           <Form
             defaultValues={{
-              actor_id: identity?.id,
               index: 0,
             }}
           >
