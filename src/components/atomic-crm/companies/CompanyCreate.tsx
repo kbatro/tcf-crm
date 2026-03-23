@@ -1,4 +1,4 @@
-import { CreateBase, Form, useGetIdentity, useTranslate } from "ra-core";
+import { CreateBase, Form, useTranslate } from "ra-core";
 import { Card, CardContent } from "@/components/ui/card";
 import { CancelButton } from "@/components/admin/cancel-button";
 import { SaveButton } from "@/components/admin/form";
@@ -6,7 +6,6 @@ import { SaveButton } from "@/components/admin/form";
 import { CompanyInputs } from "./CompanyInputs";
 
 export const CompanyCreate = () => {
-  const { identity } = useGetIdentity();
   const translate = useTranslate();
   return (
     <CreateBase
@@ -21,7 +20,7 @@ export const CompanyCreate = () => {
     >
       <div className="mt-2 flex lg:mr-72">
         <div className="flex-1">
-          <Form defaultValues={{ actor_id: identity?.id }}>
+          <Form>
             <Card>
               <CardContent>
                 <CompanyInputs />

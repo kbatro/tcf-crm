@@ -235,9 +235,9 @@ const ContactShowContent = () => {
       <div className="flex-1">
         <Card>
           <CardContent>
-            <div className="flex">
-              <Avatar />
-              <div className="ml-2 flex-1">
+            <div className="flex items-center">
+              <Avatar width={56} />
+              <div className="ml-3 flex-1">
                 <h5 className="text-xl font-semibold">
                   <RecordRepresentation />
                 </h5>

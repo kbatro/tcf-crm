@@ -1,5 +1,5 @@
-import { Building, Truck, Users } from "lucide-react";
-import { FilterLiveForm, useGetIdentity, useTranslate } from "ra-core";
+import { Building, Truck } from "lucide-react";
+import { FilterLiveForm, useTranslate } from "ra-core";
 import { ToggleFilterButton } from "@/components/admin/toggle-filter-button";
 import { SearchInput } from "@/components/admin/search-input";
 
@@ -9,7 +9,6 @@ import { getTranslatedCompanySizeLabel } from "./getTranslatedCompanySizeLabel";
 import { sizes } from "./sizes";
 
 export const CompanyListFilter = () => {
-  const { identity } = useGetIdentity();
   const { companySectors } = useConfigurationContext();
   const translate = useTranslate();
   const translatedSizes = sizes.map((size) => ({
@@ -50,16 +49,6 @@ export const CompanyListFilter = () => {
         ))}
       </FilterCategory>
 
-      <FilterCategory
-        icon={<Users className="h-4 w-4" />}
-        label="resources.companies.fields.actor_id"
-      >
-        <ToggleFilterButton
-          className="w-full justify-between"
-          label={translate("crm.common.me")}
-          value={{ actor_id: identity?.id }}
-        />
-      </FilterCategory>
     </div>
   );
 };
