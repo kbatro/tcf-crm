@@ -1,8 +1,6 @@
 -- Phase 1: Rename sales → actors, decompose contacts into primitives + relational tables
 -- This migration maintains backward compatibility via views.
 
-BEGIN;
-
 -- ============================================================
 -- 1. Rename sales → actors
 -- ============================================================
@@ -592,5 +590,3 @@ SELECT count(sub.id) AS is_initialized
 FROM (
     SELECT actors.id FROM public.actors LIMIT 1
 ) sub;
-
-COMMIT;

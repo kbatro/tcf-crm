@@ -81,7 +81,7 @@ select id, name, category, description,
 from public.deals;
 
 -- Sync the sequence
-select setval('public.intentions_id_seq', coalesce((select max(id) from public.intentions), 0));
+select setval('public.intentions_id_seq', greatest(coalesce((select max(id) from public.intentions), 0), 1));
 
 -- 2b. deals.actor_id → assignments (role='owner')
 insert into public.assignments (intention_id, actor_id, role)
@@ -109,6 +109,35 @@ from public.deal_notes;
 -- ============================================================
 -- 3. Drop old tables (order matters for FK dependencies)
 -- ============================================================
+
+-- Drop views that depend on these tables
+drop view if exists public.activity_log;
+drop view if exists public.companies_summary;
+drop view if exists public.contacts_summary;
+
+-- Drop triggers on tables being dropped
+drop trigger if exists set_deal_actor_id_trigger on public.deals;
+drop trigger if exists set_deal_notes_actor_id_trigger on public.deal_notes;
+drop trigger if exists set_contact_notes_actor_id_trigger on public.contact_notes;
+drop trigger if exists on_public_contact_notes_created_or_updated on public.contact_notes;
+drop trigger if exists on_contact_notes_attachments_updated_delete_note_attachments on public.contact_notes;
+drop trigger if exists on_contact_notes_deleted_delete_note_attachments on public.contact_notes;
+drop trigger if exists on_deal_notes_attachments_updated_delete_note_attachments on public.deal_notes;
+drop trigger if exists on_deal_notes_deleted_delete_note_attachments on public.deal_notes;
+
+-- Drop RLS policies on tables being dropped
+drop policy if exists "Enable read access for authenticated users" on public.deals;
+drop policy if exists "Enable insert for authenticated users only" on public.deals;
+drop policy if exists "Enable update for authenticated users only" on public.deals;
+drop policy if exists "Deals Delete Policy" on public.deals;
+drop policy if exists "Enable read access for authenticated users" on public.deal_notes;
+drop policy if exists "Enable insert for authenticated users only" on public.deal_notes;
+drop policy if exists "Deal Notes Update Policy" on public.deal_notes;
+drop policy if exists "Deal Notes Delete Policy" on public.deal_notes;
+drop policy if exists "Enable read access for authenticated users" on public.contact_notes;
+drop policy if exists "Enable insert for authenticated users only" on public.contact_notes;
+drop policy if exists "Contact Notes Update policy" on public.contact_notes;
+drop policy if exists "Contact Notes Delete Policy" on public.contact_notes;
 
 drop table public.deal_notes;
 drop table public.deals;
@@ -226,16 +255,6 @@ $$;
 -- ============================================================
 -- 5. Update triggers
 -- ============================================================
-
--- Drop old triggers (some already cascaded with dropped tables)
-drop trigger if exists set_contact_notes_actor_id_trigger on public.contact_notes;
-drop trigger if exists set_deal_actor_id_trigger on public.deals;
-drop trigger if exists set_deal_notes_actor_id_trigger on public.deal_notes;
-drop trigger if exists on_public_contact_notes_created_or_updated on public.contact_notes;
-drop trigger if exists on_contact_notes_attachments_updated_delete_note_attachments on public.contact_notes;
-drop trigger if exists on_contact_notes_deleted_delete_note_attachments on public.contact_notes;
-drop trigger if exists on_deal_notes_attachments_updated_delete_note_attachments on public.deal_notes;
-drop trigger if exists on_deal_notes_deleted_delete_note_attachments on public.deal_notes;
 
 -- New triggers for notes table
 create trigger set_notes_actor_id_trigger
@@ -371,6 +390,54 @@ from public.groups g
     left join public.intentions i on g.id = i.target_id and i.target_type = 'group'
     left join public.group_members gm on g.id = gm.group_id
 group by g.id;
+
+-- Recreate contacts_summary (was dropped earlier)
+create or replace view public.contacts_summary with (security_invoker = on) as
+select
+    co.id,
+    co.first_name,
+    co.last_name,
+    co.avatar,
+    co.first_seen,
+    co.last_seen,
+    co.actor_id,
+    co.created_at,
+    (select gm.group_id from public.group_members gm where gm.contact_id = co.id limit 1) as company_id,
+    coalesce(
+        (select jsonb_agg(jsonb_build_object('email', ch.value, 'type', coalesce(ch.label, 'Other')))
+         from public.channels ch where ch.contact_id = co.id and ch.type = 'email'),
+        '[]'::jsonb
+    ) as email_jsonb,
+    coalesce(
+        (select jsonb_agg(jsonb_build_object('number', ch.value, 'type', coalesce(ch.label, 'Other')))
+         from public.channels ch where ch.contact_id = co.id and ch.type = 'phone'),
+        '[]'::jsonb
+    ) as phone_jsonb,
+    (select ch.value from public.channels ch where ch.contact_id = co.id and ch.type = 'linkedin' limit 1) as linkedin_url,
+    (select p.value from public.properties p where p.contact_id = co.id and p.key = 'gender' limit 1) as gender,
+    (select p.value from public.properties p where p.contact_id = co.id and p.key = 'title' limit 1) as title,
+    (select p.value from public.properties p where p.contact_id = co.id and p.key = 'background' limit 1) as background,
+    (select p.value from public.properties p where p.contact_id = co.id and p.key = 'status' limit 1) as status,
+    coalesce((select p.value from public.properties p where p.contact_id = co.id and p.key = 'has_newsletter' limit 1), 'false')::boolean as has_newsletter,
+    coalesce(
+        (select array_agg(ct.tag_id) from public.contact_tags ct where ct.contact_id = co.id),
+        array[]::bigint[]
+    ) as tags,
+    coalesce(
+        (select string_agg(ch.value, ', ') from public.channels ch where ch.contact_id = co.id and ch.type = 'email'),
+        ''
+    ) as email_fts,
+    coalesce(
+        (select string_agg(ch.value, ', ') from public.channels ch where ch.contact_id = co.id and ch.type = 'phone'),
+        ''
+    ) as phone_fts,
+    (select g.name from public.groups g
+     inner join public.group_members gm on gm.group_id = g.id
+     where gm.contact_id = co.id limit 1) as company_name,
+    count(distinct t.id) filter (where t.done_date is null) as nb_tasks
+from public.contacts co
+    left join public.tasks t on co.id = t.contact_id
+group by co.id;
 
 -- ============================================================
 -- 8. Grants for new tables

@@ -98,7 +98,12 @@ select co.company_id, co.id, coalesce(co.first_seen, co.created_at)
 from public.contacts co
 where co.company_id is not null;
 
--- 6. Update deals: company_id → group_id
+-- 6. Drop views that depend on company_id columns (will be recreated later)
+drop view if exists public.activity_log;
+drop view if exists public.companies_summary;
+drop view if exists public.contacts_summary;
+
+-- 7. Update deals: company_id → group_id
 alter table public.deals add column group_id bigint;
 update public.deals set group_id = company_id;
 alter table public.deals add constraint deals_group_id_fkey
@@ -110,12 +115,12 @@ alter table public.deals drop constraint deals_company_id_fkey;
 drop index if exists deals_company_id_idx;
 alter table public.deals drop column company_id;
 
--- 7. Drop contacts.company_id (replaced by group_members)
-alter table public.contacts drop constraint contacts_company_id_fkey;
+-- 8. Drop contacts.company_id (replaced by group_members)
+alter table public.contacts drop constraint if exists contacts_company_id_fkey;
 drop index if exists contacts_company_id_idx;
-alter table public.contacts drop column company_id;
+alter table public.contacts drop column if exists company_id;
 
--- 8. Drop companies table
+-- 9. Drop companies table
 drop policy if exists "Enable read access for authenticated users" on public.companies;
 drop policy if exists "Enable insert for authenticated users only" on public.companies;
 drop policy if exists "Enable update for authenticated users only" on public.companies;
@@ -247,9 +252,7 @@ BEGIN
 END;
 $$;
 
--- 13. Recreate views
--- Drop and recreate activity_log
-drop view if exists public.activity_log;
+-- 14. Recreate views
 create or replace view public.activity_log with (security_invoker = on) as
 select
     ('group.' || g.id || '.created') as id,
@@ -317,8 +320,6 @@ select
 from public.deal_notes dn
     left join public.deals d on d.id = dn.deal_id;
 
--- Drop and recreate contacts_summary
-drop view if exists public.contacts_summary;
 create or replace view public.contacts_summary with (security_invoker = on) as
 select
     co.id,
@@ -366,8 +367,6 @@ from public.contacts co
     left join public.tasks t on co.id = t.contact_id
 group by co.id;
 
--- Drop and recreate companies_summary
-drop view if exists public.companies_summary;
 create or replace view public.companies_summary with (security_invoker = on) as
 select
     g.id,
