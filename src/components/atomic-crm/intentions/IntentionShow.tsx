@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import { isValid } from "date-fns";
 import { Archive, ArchiveRestore } from "lucide-react";
 import {
   ShowBase,
@@ -13,21 +12,16 @@ import {
 } from "ra-core";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { EditButton } from "@/components/admin/edit-button";
-import { ReferenceArrayField } from "@/components/admin/reference-array-field";
-import { ReferenceField } from "@/components/admin/reference-field";
 import { ReferenceManyField } from "@/components/admin/reference-many-field";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 
-import { CompanyAvatar } from "../companies/CompanyAvatar";
 import { NoteCreate } from "../notes/NoteCreate";
 import { NotesIterator } from "../notes/NotesIterator";
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import type { Intention } from "../types";
-import { ContactList } from "./ContactList";
-import { findIntentionLabel, formatISODateString } from "./intentionUtils";
+import { findIntentionLabel } from "./intentionUtils";
 
 export const IntentionShow = ({
   open,
@@ -56,8 +50,7 @@ export const IntentionShow = ({
 
 const IntentionShowContent = () => {
   const translate = useTranslate();
-  const { intentionStatuses, intentionTypes, currency } =
-    useConfigurationContext();
+  const { intentionStatuses, intentionTypes } = useConfigurationContext();
   const record = useRecordContext<Intention>();
   if (!record) return null;
 
@@ -68,13 +61,6 @@ const IntentionShowContent = () => {
         <div className="flex-1">
           <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-4">
-              <ReferenceField
-                source="target_id"
-                reference="companies"
-                link="show"
-              >
-                <CompanyAvatar />
-              </ReferenceField>
               <h2 className="text-2xl font-semibold">{record.name}</h2>
             </div>
             <div
@@ -95,41 +81,6 @@ const IntentionShowContent = () => {
           </div>
 
           <div className="flex gap-8 m-4">
-            <div className="flex flex-col mr-10">
-              <span className="text-xs text-muted-foreground tracking-wide">
-                {translate(
-                  "resources.intentions.fields.expected_closing_date",
-                )}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm">
-                  {isValid(new Date(record.expected_closing_date))
-                    ? formatISODateString(record.expected_closing_date)
-                    : translate("resources.intentions.invalid_date")}
-                </span>
-                {new Date(record.expected_closing_date) < new Date() ? (
-                  <Badge variant="destructive">
-                    {translate("crm.common.past")}
-                  </Badge>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="flex flex-col mr-10">
-              <span className="text-xs text-muted-foreground tracking-wide">
-                {translate("resources.intentions.fields.amount")}
-              </span>
-              <span className="text-sm">
-                {record.amount.toLocaleString("en-US", {
-                  notation: "compact",
-                  style: "currency",
-                  currency,
-                  currencyDisplay: "narrowSymbol",
-                  minimumSignificantDigits: 3,
-                })}
-              </span>
-            </div>
-
             {record.type && (
               <div className="flex flex-col mr-10">
                 <span className="text-xs text-muted-foreground tracking-wide">
@@ -151,22 +102,6 @@ const IntentionShowContent = () => {
               </span>
             </div>
           </div>
-
-          {!!record.contact_ids?.length && (
-            <div className="m-4">
-              <div className="flex flex-col min-h-12 mr-10">
-                <span className="text-xs text-muted-foreground tracking-wide">
-                  {translate("resources.intentions.fields.contact_ids")}
-                </span>
-                <ReferenceArrayField
-                  source="contact_ids"
-                  reference="contacts_summary"
-                >
-                  <ContactList />
-                </ReferenceArrayField>
-              </div>
-            </div>
-          )}
 
           {record.description && (
             <div className="m-4 whitespace-pre-line">

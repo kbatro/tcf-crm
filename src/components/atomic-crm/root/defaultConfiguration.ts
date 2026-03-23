@@ -22,15 +22,13 @@ export const defaultCompanySectors = [
 ];
 
 export const defaultIntentionStatuses = [
-  { value: "opportunity", label: "Opportunity" },
-  { value: "proposal-sent", label: "Proposal Sent" },
-  { value: "in-negociation", label: "In Negotiation" },
-  { value: "won", label: "Won" },
-  { value: "lost", label: "Lost" },
-  { value: "delayed", label: "Delayed" },
+  { value: "entering", label: "Entering" },
+  { value: "active", label: "Active" },
+  { value: "succeeded", label: "Succeeded" },
+  { value: "failed", label: "Failed" },
 ];
 
-export const defaultIntentionSuccessStatuses = ["won"];
+export const defaultIntentionSuccessStatuses = ["succeeded"];
 
 export const defaultIntentionTypes = [
   { value: "engagement", label: "Engagement" },

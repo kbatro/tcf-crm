@@ -143,12 +143,7 @@ export type Intention = {
   name: string;
   type: string;
   description: string;
-  target_type: string;
-  target_id: Identifier;
   status: string;
-  outcome: string;
-  amount: number;
-  expected_closing_date: string;
   created_at: string;
   updated_at: string;
   archived_at?: string;

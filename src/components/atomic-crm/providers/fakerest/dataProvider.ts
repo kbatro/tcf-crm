@@ -556,12 +556,6 @@ export const createDataProvider = ({
           };
         },
         afterCreate: async (result) => {
-          if (result.data.target_type === "group" && result.data.target_id) {
-            await updateCompany(result.data.target_id, (company) => ({
-              nb_intentions: (company.nb_intentions ?? 0) + 1,
-            }));
-          }
-
           return result;
         },
         beforeUpdate: async (params) => {
@@ -574,12 +568,6 @@ export const createDataProvider = ({
           };
         },
         afterDelete: async (result) => {
-          if (result.data.target_type === "group" && result.data.target_id) {
-            await updateCompany(result.data.target_id, (company) => ({
-              nb_intentions: (company.nb_intentions ?? 1) - 1,
-            }));
-          }
-
           return result;
         },
       } satisfies ResourceCallbacks<Intention>,

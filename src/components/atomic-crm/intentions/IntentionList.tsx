@@ -2,11 +2,9 @@ import type { ReactNode } from "react";
 import type { InputProps } from "ra-core";
 import { useGetIdentity, useListContext, useTranslate } from "ra-core";
 import { matchPath, useLocation } from "react-router";
-import { AutocompleteInput } from "@/components/admin/autocomplete-input";
 import { CreateButton } from "@/components/admin/create-button";
 import { ExportButton } from "@/components/admin/export-button";
 import { List } from "@/components/admin/list";
-import { ReferenceInput } from "@/components/admin/reference-input";
 import { FilterButton } from "@/components/admin/filter-form";
 import { SearchInput } from "@/components/admin/search-input";
 import { SelectInput } from "@/components/admin/select-input";
@@ -19,7 +17,6 @@ import { IntentionEdit } from "./IntentionEdit";
 import { IntentionEmpty } from "./IntentionEmpty";
 import { IntentionListContent } from "./IntentionListContent";
 import { IntentionShow } from "./IntentionShow";
-import { OnlyMineInput } from "./OnlyMineInput";
 
 const IntentionList = () => {
   const { identity } = useGetIdentity();
@@ -30,12 +27,6 @@ const IntentionList = () => {
 
   const intentionFilters = [
     <SearchInput source="q" alwaysOn />,
-    <ReferenceInput source="target_id" reference="companies">
-      <AutocompleteInput
-        label={false}
-        placeholder={translate("resources.intentions.fields.target_id")}
-      />
-    </ReferenceInput>,
     <WrapperField source="type" label="resources.intentions.fields.type">
       <SelectInput
         source="type"
@@ -46,7 +37,6 @@ const IntentionList = () => {
         optionValue="value"
       />
     </WrapperField>,
-    <OnlyMineInput source="actor_id" alwaysOn />,
   ];
 
   return (

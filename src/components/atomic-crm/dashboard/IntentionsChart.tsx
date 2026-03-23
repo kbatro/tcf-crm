@@ -4,31 +4,16 @@ import { TrendingUp } from "lucide-react";
 import { useGetList, useTranslate } from "ra-core";
 import { memo, useMemo } from "react";
 
-import { findIntentionLabel } from "../intentions/intentionUtils";
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import type { Intention } from "../types";
 
-const multiplier = {
-  opportunity: 0.2,
-  "proposal-sent": 0.5,
-  "in-negociation": 0.8,
-  delayed: 0.3,
-};
-
-const threeMonthsAgo = new Date(
+const sixMonthsAgo = new Date(
   new Date().setMonth(new Date().getMonth() - 6),
 ).toISOString();
 
-const DEFAULT_LOCALE = "en-US";
-
 export const IntentionsChart = memo(() => {
   const translate = useTranslate();
-  const { intentionStatuses, currency } = useConfigurationContext();
-  const acceptedLanguages = navigator
-    ? navigator.languages || [navigator.language]
-    : [DEFAULT_LOCALE];
-  const wonLabel = findIntentionLabel(intentionStatuses, "won") ?? "Won";
-  const lostLabel = findIntentionLabel(intentionStatuses, "lost") ?? "Lost";
+  const { intentionStatuses } = useConfigurationContext();
 
   const { data, isPending } = useGetList<Intention>("intentions", {
     pagination: { perPage: 100, page: 1 },
@@ -37,62 +22,44 @@ export const IntentionsChart = memo(() => {
       order: "ASC",
     },
     filter: {
-      "created_at@gte": threeMonthsAgo,
+      "created_at@gte": sixMonthsAgo,
     },
   });
+
   const months = useMemo(() => {
     if (!data) return [];
-    const intentionsByMonth = data.reduce((acc, intention) => {
-      const month = startOfMonth(
-        intention.created_at ?? new Date(),
-      ).toISOString();
-      if (!acc[month]) {
-        acc[month] = [];
+    const intentionsByMonth = data.reduce(
+      (acc, intention) => {
+        const month = startOfMonth(
+          intention.created_at ?? new Date(),
+        ).toISOString();
+        if (!acc[month]) {
+          acc[month] = [];
+        }
+        acc[month].push(intention);
+        return acc;
+      },
+      {} as Record<string, Intention[]>,
+    );
+
+    const statusKeys = intentionStatuses.map((s) => s.value);
+
+    return Object.keys(intentionsByMonth).map((month) => {
+      const entry: Record<string, any> = { date: format(month, "MMM") };
+      for (const status of statusKeys) {
+        entry[status] = intentionsByMonth[month].filter(
+          (i) => i.status === status,
+        ).length;
       }
-      acc[month].push(intention);
-      return acc;
-    }, {} as any);
-
-    const amountByMonth = Object.keys(intentionsByMonth).map((month) => {
-      return {
-        date: format(month, "MMM"),
-        won: intentionsByMonth[month]
-          .filter((intention: Intention) => intention.status === "won")
-          .reduce((acc: number, intention: Intention) => {
-            acc += intention.amount;
-            return acc;
-          }, 0),
-        pending: intentionsByMonth[month]
-          .filter(
-            (intention: Intention) =>
-              !["won", "lost"].includes(intention.status),
-          )
-          .reduce((acc: number, intention: Intention) => {
-            // @ts-expect-error - multiplier type issue
-            acc += intention.amount * multiplier[intention.status];
-            return acc;
-          }, 0),
-        lost: intentionsByMonth[month]
-          .filter((intention: Intention) => intention.status === "lost")
-          .reduce((acc: number, intention: Intention) => {
-            acc -= intention.amount;
-            return acc;
-          }, 0),
-      };
+      return entry;
     });
-
-    return amountByMonth;
-  }, [data]);
+  }, [data, intentionStatuses]);
 
   if (isPending) return null;
-  const range = months.reduce(
-    (acc, month) => {
-      acc.min = Math.min(acc.min, month.lost);
-      acc.max = Math.max(acc.max, month.won + month.pending);
-      return acc;
-    },
-    { min: 0, max: 0 },
-  );
+
+  const statusKeys = intentionStatuses.map((s) => s.value);
+  const colors = ["#61cdbb", "#97e3d5", "#2ebca6", "#e25c3b"];
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center mb-4">
@@ -107,28 +74,24 @@ export const IntentionsChart = memo(() => {
         <ResponsiveBar
           data={months}
           indexBy="date"
-          keys={["won", "pending", "lost"]}
-          colors={["#61cdbb", "#97e3d5", "#e25c3b"]}
+          keys={statusKeys}
+          colors={colors.slice(0, statusKeys.length)}
           margin={{ top: 30, right: 50, bottom: 30, left: 0 }}
           padding={0.3}
-          valueScale={{
-            type: "linear",
-            min: range.min * 1.2,
-            max: range.max * 1.2,
-          }}
+          valueScale={{ type: "linear" }}
           indexScale={{ type: "band", round: true }}
           enableGridX={true}
           enableGridY={false}
           enableLabel={false}
-          tooltip={({ value, indexValue }) => (
-            <div className="p-2 bg-secondary rounded shadow inline-flex items-center gap-1 text-secondary-foreground">
-              <strong>{indexValue}: </strong>&nbsp;{value > 0 ? "+" : ""}
-              {value.toLocaleString(acceptedLanguages.at(0) ?? DEFAULT_LOCALE, {
-                style: "currency",
-                currency,
-              })}
-            </div>
-          )}
+          tooltip={({ id, value, indexValue }) => {
+            const label =
+              intentionStatuses.find((s) => s.value === id)?.label ?? id;
+            return (
+              <div className="p-2 bg-secondary rounded shadow inline-flex items-center gap-1 text-secondary-foreground">
+                <strong>{indexValue}: </strong>&nbsp;{label}: {value}
+              </div>
+            );
+          }}
           axisTop={{
             tickSize: 0,
             tickPadding: 12,
@@ -157,7 +120,6 @@ export const IntentionsChart = memo(() => {
           }}
           axisLeft={null}
           axisRight={{
-            format: (v: any) => `${Math.abs(v / 1000)}k`,
             tickValues: 8,
             style: {
               ticks: {
@@ -168,31 +130,22 @@ export const IntentionsChart = memo(() => {
               },
             },
           }}
-          markers={
-            [
-              {
-                axis: "y",
-                value: 0,
-                lineStyle: { strokeOpacity: 0 },
-                textStyle: { fill: "#2ebca6" },
-                legend: wonLabel,
-                legendPosition: "top-left",
-                legendOrientation: "vertical",
-              },
-              {
-                axis: "y",
-                value: 0,
-                lineStyle: {
-                  stroke: "#f47560",
-                  strokeWidth: 1,
-                },
-                textStyle: { fill: "#e25c3b" },
-                legend: lostLabel,
-                legendPosition: "bottom-left",
-                legendOrientation: "vertical",
-              },
-            ] as any
-          }
+          legends={[
+            {
+              dataFrom: "keys",
+              anchor: "top-right",
+              direction: "column",
+              translateX: 50,
+              itemWidth: 80,
+              itemHeight: 20,
+              itemTextColor: "var(--color-muted-foreground)",
+              data: intentionStatuses.map((s, i) => ({
+                id: s.value,
+                label: s.label,
+                color: colors[i % colors.length],
+              })),
+            },
+          ]}
         />
       </div>
     </div>

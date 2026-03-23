@@ -76,9 +76,7 @@ export const IntentionCreate = ({ open }: { open: boolean }) => {
           <Form
             defaultValues={{
               actor_id: identity?.id,
-              contact_ids: [],
               index: 0,
-              target_type: "group",
             }}
           >
             <IntentionInputs />

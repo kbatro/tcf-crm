@@ -183,11 +183,7 @@ export const frenchCrmMessages = {
       fields: {
         name: "Nom",
         description: "Description",
-        target_id: "Groupe",
-        contact_ids: "Personnes",
         type: "Type",
-        amount: "Budget",
-        expected_closing_date: "Date de clôture prévue",
         status: "Statut",
       },
       action: {
@@ -206,12 +202,6 @@ export const frenchCrmMessages = {
         title: "Effort archivé",
         view: "Afficher les efforts archivés",
       },
-      filters: {
-        only_mine: "Seulement les efforts que je gère",
-      },
-      inputs: {
-        linked_to: "Lié à",
-      },
       unarchived: {
         action: "Renvoyer au tableau",
         error: "Erreur : effort non désarchivé",
@@ -223,7 +213,6 @@ export const frenchCrmMessages = {
         description: "Il semble que votre liste d'efforts soit vide.",
         title: "Aucun effort trouvé",
       },
-      invalid_date: "Date invalide",
     },
     notes: {
       name: "Note |||| Notes",
@@ -410,7 +399,7 @@ export const frenchCrmMessages = {
       load_more: "Charger plus d'activité",
     },
     dashboard: {
-      intentions_chart: "Revenus des efforts à venir",
+      intentions_chart: "Efforts par statut",
       intentions_pipeline: "Pipeline des efforts",
       latest_activity: "Dernière activité",
       latest_activity_error:

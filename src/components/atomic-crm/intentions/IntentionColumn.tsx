@@ -12,11 +12,7 @@ export const IntentionColumn = ({
   status: string;
   intentions: Intention[];
 }) => {
-  const totalAmount = intentions.reduce(
-    (sum, intention) => sum + intention.amount,
-    0,
-  );
-  const { intentionStatuses, currency } = useConfigurationContext();
+  const { intentionStatuses } = useConfigurationContext();
   return (
     <div className="flex-1 pb-8">
       <div className="flex flex-col items-center">
@@ -24,13 +20,7 @@ export const IntentionColumn = ({
           {findIntentionLabel(intentionStatuses, status)}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {totalAmount.toLocaleString("en-US", {
-            notation: "compact",
-            style: "currency",
-            currency,
-            currencyDisplay: "narrowSymbol",
-            minimumSignificantDigits: 3,
-          })}
+          {intentions.length}
         </p>
       </div>
       <Droppable droppableId={status}>

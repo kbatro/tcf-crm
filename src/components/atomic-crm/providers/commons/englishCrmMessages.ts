@@ -179,11 +179,7 @@ export const englishCrmMessages = {
       fields: {
         name: "Name",
         description: "Description",
-        target_id: "Group",
-        contact_ids: "People",
         type: "Type",
-        amount: "Budget",
-        expected_closing_date: "Expected closing date",
         status: "Status",
       },
       action: {
@@ -202,12 +198,6 @@ export const englishCrmMessages = {
         title: "Archived Effort",
         view: "View archived efforts",
       },
-      filters: {
-        only_mine: "Only efforts I manage",
-      },
-      inputs: {
-        linked_to: "Linked to",
-      },
       unarchived: {
         action: "Send back to the board",
         error: "Error: effort not unarchived",
@@ -219,7 +209,6 @@ export const englishCrmMessages = {
         description: "It seems your effort list is empty.",
         title: "No efforts found",
       },
-      invalid_date: "Invalid date",
     },
     notes: {
       name: "Note |||| Notes",
@@ -404,7 +393,7 @@ export const englishCrmMessages = {
       load_more: "Load more activity",
     },
     dashboard: {
-      intentions_chart: "Upcoming Effort Revenue",
+      intentions_chart: "Efforts by Status",
       intentions_pipeline: "Efforts Pipeline",
       latest_activity: "Latest Activity",
       latest_activity_error: "Error loading latest activity",

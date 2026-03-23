@@ -274,11 +274,177 @@ const lifeCycleCallbacks: ResourceCallbacks[] = [
         "first_name",
         "last_name",
         "company_name",
-        "title",
         "email",
         "phone",
-        "background",
       ])(params);
+    },
+    beforeCreate: async (params) => {
+      const {
+        email_jsonb,
+        phone_jsonb,
+        linkedin_url,
+        company_id,
+        company_name,
+        gender,
+        title,
+        background,
+        has_newsletter,
+        status,
+        tags,
+        nb_tasks,
+        email_fts,
+        phone_fts,
+        ...contactData
+      } = params.data;
+      params.meta = {
+        ...params.meta,
+        _channels: { email_jsonb, phone_jsonb, linkedin_url },
+        _company_id: company_id,
+      };
+      return { ...params, data: contactData };
+    },
+    afterCreate: async (result, params) => {
+      const contactId = result.data.id;
+      const channelData = params.meta?._channels;
+      const companyId = params.meta?._company_id;
+
+      const channels: {
+        contact_id: any;
+        type: string;
+        value: string;
+        label: string;
+      }[] = [];
+      if (channelData?.email_jsonb) {
+        for (const e of channelData.email_jsonb) {
+          if (e.email) {
+            channels.push({
+              contact_id: contactId,
+              type: "email",
+              value: e.email,
+              label: e.type || "Other",
+            });
+          }
+        }
+      }
+      if (channelData?.phone_jsonb) {
+        for (const p of channelData.phone_jsonb) {
+          if (p.number) {
+            channels.push({
+              contact_id: contactId,
+              type: "phone",
+              value: p.number,
+              label: p.type || "Other",
+            });
+          }
+        }
+      }
+      if (channelData?.linkedin_url) {
+        channels.push({
+          contact_id: contactId,
+          type: "linkedin",
+          value: channelData.linkedin_url,
+          label: "LinkedIn",
+        });
+      }
+      if (channels.length > 0) {
+        await supabase.from("channels").insert(channels);
+      }
+
+      if (companyId) {
+        await supabase
+          .from("group_members")
+          .insert({ group_id: companyId, contact_id: contactId });
+      }
+
+      return result;
+    },
+    beforeUpdate: async (params) => {
+      const {
+        email_jsonb,
+        phone_jsonb,
+        linkedin_url,
+        company_id,
+        company_name,
+        gender,
+        title,
+        background,
+        has_newsletter,
+        status,
+        tags,
+        nb_tasks,
+        email_fts,
+        phone_fts,
+        ...contactData
+      } = params.data;
+      params.meta = {
+        ...params.meta,
+        _channels: { email_jsonb, phone_jsonb, linkedin_url },
+        _company_id: company_id,
+      };
+      return { ...params, data: contactData };
+    },
+    afterUpdate: async (result, params) => {
+      const contactId = result.data.id;
+      const channelData = params.meta?._channels;
+      const companyId = params.meta?._company_id;
+
+      // Delete existing channels and re-insert
+      await supabase.from("channels").delete().eq("contact_id", contactId);
+
+      const channels: {
+        contact_id: any;
+        type: string;
+        value: string;
+        label: string;
+      }[] = [];
+      if (channelData?.email_jsonb) {
+        for (const e of channelData.email_jsonb) {
+          if (e.email) {
+            channels.push({
+              contact_id: contactId,
+              type: "email",
+              value: e.email,
+              label: e.type || "Other",
+            });
+          }
+        }
+      }
+      if (channelData?.phone_jsonb) {
+        for (const p of channelData.phone_jsonb) {
+          if (p.number) {
+            channels.push({
+              contact_id: contactId,
+              type: "phone",
+              value: p.number,
+              label: p.type || "Other",
+            });
+          }
+        }
+      }
+      if (channelData?.linkedin_url) {
+        channels.push({
+          contact_id: contactId,
+          type: "linkedin",
+          value: channelData.linkedin_url,
+          label: "LinkedIn",
+        });
+      }
+      if (channels.length > 0) {
+        await supabase.from("channels").insert(channels);
+      }
+
+      // Delete existing group_members and re-insert
+      await supabase
+        .from("group_members")
+        .delete()
+        .eq("contact_id", contactId);
+      if (companyId) {
+        await supabase
+          .from("group_members")
+          .insert({ group_id: companyId, contact_id: contactId });
+      }
+
+      return result;
     },
   },
   {

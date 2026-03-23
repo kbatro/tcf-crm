@@ -41,7 +41,7 @@ describe("i18nProvider", () => {
     await i18nProvider.changeLocale("fr");
 
     expect(i18nProvider.translate("resources.intentions.empty.title")).toBe(
-      "Aucune intention trouvée",
+      "Aucun effort trouvé",
     );
   });
 
