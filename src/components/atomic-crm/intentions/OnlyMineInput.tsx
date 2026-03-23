@@ -26,7 +26,7 @@ export const OnlyMineInput = (_: { alwaysOn: boolean; source: string }) => {
         />
         <Label htmlFor="only-mine">
           {translate("resources.intentions.filters.only_mine", {
-            _: "Only intentions I manage",
+            _: "Only efforts I manage",
           })}
         </Label>
       </div>

@@ -56,7 +56,7 @@ export const CompanyCard = (props: { record?: Company }) => {
               <span className="text-xs text-muted-foreground">
                 {translate("resources.intentions.name", {
                   smart_count: record.nb_intentions,
-                  _: "Intention |||| Intentions",
+                  _: "Effort |||| Efforts",
                 })}
               </span>
             </div>

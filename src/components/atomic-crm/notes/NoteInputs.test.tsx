@@ -24,7 +24,7 @@ const testI18nProvider = {
         "resources.notes.fields.attachments": "Attachments",
         "resources.notes.fields.status": "Status",
         "resources.notes.fields.contact_id": "Contact",
-        "resources.notes.fields.intention_id": "Intention",
+        "resources.notes.fields.intention_id": "Effort",
       }) as Record<string, string>
     )[key] ?? key,
   changeLocale: () => Promise.resolve(),
@@ -139,7 +139,7 @@ describe("NoteInputs", () => {
       },
     );
 
-    await expect.element(screen.getByText("Intention")).toBeVisible();
+    await expect.element(screen.getByText("Effort")).toBeVisible();
   });
 
   it("does not render a reference selector when selectReference is not set", async () => {
@@ -149,7 +149,7 @@ describe("NoteInputs", () => {
 
     await expect.element(screen.getByText("Contact")).not.toBeInTheDocument();
     await expect
-      .element(screen.getByText("Intention"))
+      .element(screen.getByText("Effort"))
       .not.toBeInTheDocument();
   });
 

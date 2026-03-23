@@ -44,7 +44,7 @@ export const englishCrmMessages = {
       followed_by_you: "Followed by you",
       no_members: "No members",
       nb_members: "%{smart_count} member |||| %{smart_count} members",
-      nb_intentions: "%{smart_count} intention |||| %{smart_count} intentions",
+      nb_intentions: "%{smart_count} effort |||| %{smart_count} efforts",
       sizes: {
         one_employee: "1 employee",
         two_to_nine_employees: "2-9 employees",
@@ -174,8 +174,8 @@ export const englishCrmMessages = {
       },
     },
     intentions: {
-      name: "Intention |||| Intentions",
-      forcedCaseName: "Intention",
+      name: "Effort |||| Efforts",
+      forcedCaseName: "Effort",
       fields: {
         name: "Name",
         description: "Description",
@@ -187,37 +187,37 @@ export const englishCrmMessages = {
         status: "Status",
       },
       action: {
-        back_to_intention: "Back to intention",
-        create: "Create intention",
-        new: "New Intention",
+        back_to_intention: "Back to effort",
+        create: "Create effort",
+        new: "New Effort",
       },
       field_categories: {
         misc: "Misc",
       },
       archived: {
         action: "Archive",
-        error: "Error: intention not archived",
-        list_title: "Archived Intentions",
-        success: "Intention archived",
-        title: "Archived Intention",
-        view: "View archived intentions",
+        error: "Error: effort not archived",
+        list_title: "Archived Efforts",
+        success: "Effort archived",
+        title: "Archived Effort",
+        view: "View archived efforts",
       },
       filters: {
-        only_mine: "Only intentions I manage",
+        only_mine: "Only efforts I manage",
       },
       inputs: {
         linked_to: "Linked to",
       },
       unarchived: {
         action: "Send back to the board",
-        error: "Error: intention not unarchived",
-        success: "Intention unarchived",
+        error: "Error: effort not unarchived",
+        success: "Effort unarchived",
       },
-      updated: "Intention updated",
+      updated: "Effort updated",
       empty: {
-        before_create: "before creating an intention.",
-        description: "It seems your intention list is empty.",
-        title: "No intentions found",
+        before_create: "before creating an effort.",
+        description: "It seems your effort list is empty.",
+        title: "No efforts found",
       },
       invalid_date: "Invalid date",
     },
@@ -229,7 +229,7 @@ export const englishCrmMessages = {
         date: "Date",
         attachments: "Attachments",
         contact_id: "Person",
-        intention_id: "Intention",
+        intention_id: "Effort",
       },
       action: {
         add: "Add note",
@@ -395,17 +395,17 @@ export const englishCrmMessages = {
 
       added_note: "%{name} added a note about",
       you_added_note: "You added a note about",
-      added_note_about_intention: "%{name} added a note about intention",
-      you_added_note_about_intention: "You added a note about intention",
-      added_intention: "%{name} added intention",
-      you_added_intention: "You added intention",
+      added_note_about_intention: "%{name} added a note about effort",
+      you_added_note_about_intention: "You added a note about effort",
+      added_intention: "%{name} added effort",
+      you_added_intention: "You added effort",
       at_company: "at",
       to: "to",
       load_more: "Load more activity",
     },
     dashboard: {
-      intentions_chart: "Upcoming Intention Revenue",
-      intentions_pipeline: "Intentions Pipeline",
+      intentions_chart: "Upcoming Effort Revenue",
+      intentions_pipeline: "Efforts Pipeline",
       latest_activity: "Latest Activity",
       latest_activity_error: "Error loading latest activity",
       latest_notes: "My Latest Notes",
@@ -463,7 +463,7 @@ export const englishCrmMessages = {
         types: "Types",
         currency: "Currency",
         success_help:
-          "Select which intention statuses should count as success.",
+          "Select which effort statuses should count as success.",
         success_statuses: "Success Statuses",
         statuses: "Statuses",
       },
@@ -487,7 +487,7 @@ export const englishCrmMessages = {
       validation: {
         duplicate: "Duplicate %{display_name}: %{items}",
         in_use:
-          "Cannot remove %{display_name} that are still used by intentions: %{items}",
+          "Cannot remove %{display_name} that are still used by efforts: %{items}",
         validating: "Validating\u2026",
         entities: {
           types: "types",

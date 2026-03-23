@@ -76,7 +76,7 @@ const IntentionRef = ({ note }: { note: Note }) => {
   return (
     <>
       {translate("resources.intentions.forcedCaseName", {
-        _: "Intention",
+        _: "Effort",
       })}{" "}
       <ReferenceField
         record={note}
